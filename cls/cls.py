@@ -23,6 +23,6 @@ def cls():  # to clear the terminal
     if win:
         os.system("cls")  # clearing terminal screen
     elif lin:
-        os.system("reset")  # equivalent of cls for Ubuntu/Linux
+        os.system("clear")  # equivalent of cls for Ubuntu/Linux
     elif oth:
-        os.system("reset")  # this might work for OSX
+        os.system("clear")  # this might work for OSX
