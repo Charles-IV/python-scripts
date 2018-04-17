@@ -6,4 +6,4 @@ This is intended as a little excersise to ease me into object orientation, which
 
 Currently it doesn't work, I have no clue why
 
-This was done in pycharm if you were wondering what all the venv and __pycache__ was about.
+This was done in pycharm if you were wondering what all the venv and \_\_pycache__ was about.
