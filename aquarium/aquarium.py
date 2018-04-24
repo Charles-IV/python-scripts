@@ -71,6 +71,8 @@ spawn()
 while True:
     for f in fish:
         f.up()
+        if f.xPos > width:
+            fish.remove(f)
 
     draw()
 
