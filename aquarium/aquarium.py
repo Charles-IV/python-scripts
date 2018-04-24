@@ -16,11 +16,11 @@ class Fish:
     def __init__(self, ypos, sprite):
         self.yPos = ypos
         self.xPos = 0
-        # self.speed = speed
+        self.speed = random.randint(1, 4)
         self.sprite = sprite
 
     def up(self):
-        self.xPos += 1
+        self.xPos += self.speed
 
 
 def getFishOnY(y):
@@ -79,4 +79,4 @@ while True:
         spawn()
         count = 0
 
-    time.sleep(0.5)
+    time.sleep(0.1)
