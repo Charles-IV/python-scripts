@@ -48,8 +48,12 @@ def draw():
                 drawn = 0  # how many characters I have drawn on this x
                 for f in fony:
                     if f.xPos == x + drawn:  # if the fish starts there
-                        print(f.sprite, end="")
-                        drawn += len(f.sprite)
+                        for char in f.sprite:  # iterate through sprite
+                            if x + drawn >= width:
+                                break  # don't draw if it it's going off edge
+                            else:
+                                print(char, end="")
+                                drawn += 1
 
                 if drawn == 0:  # if still haven't drawn sprite
                     print(" ", end="")  # draw space and go to next x
