@@ -42,10 +42,9 @@ def getFishOnY(y):
 
 
 def draw():
-    cls()
+    console = ""
     # print top of sea
-    for i in range(0, width):
-        print("-", end="")
+    console += "-" * width + "\n"
 
     # lastFish = [-1]  # set the y position of the last fish printed
     for i in range(1, depth):  # iterate through the depths
@@ -72,7 +71,10 @@ def draw():
                     if x + drawn <= width:
                         y += " "
                     
-        print(y)
+        console += y + "\n"
+        
+    cls()
+    print(console)
 
 
 def spawn():
