@@ -11,6 +11,8 @@ from cls import cls
 fps = 24
 # get size of terminal
 width, depth = get_terminal_size()
+sky = depth // 8  # sky is 1/8 of screen
+depth -= sky
 depth -= 2  # depth correction
 # array for fish
 fish = []
@@ -48,23 +50,25 @@ def getFishOnY(y):
 
 
 def draw(wave):
+    # print sky
+    console = "\n" * sky + "\n"
+    #console = ""
+    
     # print top of sea
     if wave == 1:
-        console = "_--" * (width//3) + "\n"
+        console += "_--" * (width//3) + "\n"
     
     elif wave == 2:
-        console = "-_-" * (width//3) + "\n"
+        console += "-_-" * (width//3) + "\n"
         
     elif wave == 3:
-        console = "--_" * (width//3) + "\n"
+        console += "--_" * (width//3) + "\n"
 
-    # lastFish = [-1]  # set the y position of the last fish printed
     for i in range(1, depth):  # iterate through the depths
         y = ""  # write to this string then write the string to console
         drawn = 0  # how many characters I have drawn on this y
         fony = getFishOnY(i)  # get the fish on that y
-        #if len(fony) == 0:  # if there are no fish on that y
-        if False:
+        if len(fony) == 0:  # if there are no fish on that y
             print()
         else:
             for x in range(0, width):  # go across the page
@@ -102,13 +106,14 @@ def spawn():
 count = 0
 nextSpawn = random.randint(5, 10)
 waveCount = 1
-#wave = True
 
 spawn()
 
 while True:
     # correct terminal size
     width, depth = get_terminal_size()
+    sky = depth // 8  # sky is 1/8 of screen
+    depth -= sky
     depth -= 2  # depth correction
     
     for f in fish:
@@ -120,7 +125,6 @@ while True:
         else:
             if f.xPos < 0:
                 fish.remove(f)
-
     
     draw(int(waveCount))
     
