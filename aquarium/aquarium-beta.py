@@ -49,6 +49,7 @@ def draw():
 
     # lastFish = [-1]  # set the y position of the last fish printed
     for i in range(1, depth):  # iterate through the depths
+        y = ""  # write to this string then write the string to console
         drawn = 0  # how many characters I have drawn on this y
         fony = getFishOnY(i)  # get the fish on that y
         #if len(fony) == 0:  # if there are no fish on that y
@@ -60,18 +61,18 @@ def draw():
                 for f in fony:
                     if f.xPos == x + drawn:  # if the fish starts there
                         for char in f.sprite:  # iterate through sprite
-                            if x + drawn >= width:
+                            if len(y) >= width:
                                 break  # don't draw if it it's going off edge
                             else:
-                                print(char, end="")
+                                y += char
                                 drawn += 1
                     #break  # so we don't draw two fish in the same position
 
                 if drawn == 0:  # if still haven't drawn sprite
                     if x + drawn <= width:
-                        print(" ", end="")  # draw space and go to next x
+                        y += " "
                     
-        print()        
+        print(y)
 
 
 def spawn():
