@@ -4,12 +4,17 @@ Aquarium
 """
 
 import random, time
+from shutil import get_terminal_size
 from cls import cls
 
+# set number of updates per second
 fps = 24
-depth = 22
-width = 80
+# get size of terminal
+width, depth = get_terminal_size()
+depth -= 2  # depth correction
+# array for fish
 fish = []
+# arrays of sprites
 sprites = ["><>", "><##>", ">#-", ">[###]>", "]<@>", ">[>-"]
 backSprites = ["<><", "<##><", "-#<", "<[##]<", "<@>[", "-<]<"]
 
@@ -43,9 +48,8 @@ def getFishOnY(y):
 
 
 def draw():
-    console = ""
     # print top of sea
-    console += "-" * width + "\n"
+    console = "-" * width + "\n"
 
     # lastFish = [-1]  # set the y position of the last fish printed
     for i in range(1, depth):  # iterate through the depths
@@ -66,7 +70,7 @@ def draw():
                             else:
                                 y += char
                                 drawn += 1
-                    #break  # so we don't draw two fish in the same position
+                    break  # so we don't draw two fish in the same position
 
                 if drawn == 0:  # if still haven't drawn sprite
                     if x + drawn <= width:
@@ -93,6 +97,10 @@ nextSpawn = random.randint(5, 10)
 spawn()
 
 while True:
+    # correct terminal size
+    width, depth = get_terminal_size()
+    depth -= 2  # depth correction
+    
     for f in fish:
         f.up()
         # remove fish from array when off screen
