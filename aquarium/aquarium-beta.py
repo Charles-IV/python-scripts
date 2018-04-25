@@ -47,9 +47,16 @@ def getFishOnY(y):
     return fOnY
 
 
-def draw():
+def draw(wave):
     # print top of sea
-    console = "-" * width + "\n"
+    if wave == 1:
+        console = "_--" * (width//3) + "\n"
+    
+    elif wave == 2:
+        console = "-_-" * (width//3) + "\n"
+        
+    elif wave == 3:
+        console = "--_" * (width//3) + "\n"
 
     # lastFish = [-1]  # set the y position of the last fish printed
     for i in range(1, depth):  # iterate through the depths
@@ -63,7 +70,7 @@ def draw():
             for x in range(0, width):  # go across the page
                 #drawn = 0  # how many characters I have drawn on this x
                 for f in fony:
-                    if f.xPos == x + drawn:  # if the fish starts there
+                    if f.xPos == (x + drawn):  # if the fish starts there
                         for char in f.sprite:  # iterate through sprite
                             if len(y) >= width:
                                 break  # don't draw if it it's going off edge
@@ -71,6 +78,7 @@ def draw():
                                 y += char
                                 drawn += 1
                     break  # so we don't draw two fish in the same position
+                    # this actually just doesn't print the fish if it is on the same line but oh well
 
                 if drawn == 0:  # if still haven't drawn sprite
                     if x + drawn <= width:
@@ -93,6 +101,8 @@ def spawn():
 
 count = 0
 nextSpawn = random.randint(5, 10)
+waveCount = 1
+#wave = True
 
 spawn()
 
@@ -111,11 +121,17 @@ while True:
             if f.xPos < 0:
                 fish.remove(f)
 
-    draw()
+    
+    draw(int(waveCount))
+    
+    if waveCount == 3:
+        waveCount = 0.5  # it will be one at the end of the loop
 
     count += 1
     if count == nextSpawn:
         spawn()
         count = 0
-
+    
+    waveCount += 0.5
+    
     time.sleep(1/fps)
