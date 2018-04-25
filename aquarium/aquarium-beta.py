@@ -6,6 +6,7 @@ Aquarium
 import random, time
 from cls import cls
 
+fps = 24
 depth = 22
 width = 80
 fish = []
@@ -109,4 +110,4 @@ while True:
         spawn()
         count = 0
 
-    time.sleep(0.1)
+    time.sleep(1/fps)
