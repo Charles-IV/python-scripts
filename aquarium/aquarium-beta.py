@@ -18,23 +18,35 @@ depth -= 2  # depth correction
 fish = []
 # arrays of sprites
 sprites = ["><>", "><##>", ">#-", ">[###]>", "]<@>", ">[>-"]
-backSprites = ["<><", "<##><", "-#<", "<[###]<", "<@>[", "-<]<"]
 
 
+def ReverseFish(revFish):
+    start = [">", "<", "]", "[", "}", "{", "/", "\\"]
+    code =  ["1", "2", "3", "4", "5", "6", "7", "8" ]
+    end =   ["<", ">", "[", "]", "{", "}", "\\", "/"]
+
+    for i in range(0, len(start)):
+        revFish = revFish.replace(start[i], code[i])
+
+    for i in range(0, len(end)):
+        revFish = revFish.replace(code[i], end[i])
+
+    return revFish[::-1]
+    
+    
 class Fish:
     def __init__(self, ypos, back, sprite):
-        if not back:  # if left -> right
-            self.yPos = ypos
-            self.xPos = 0
-            self.back = back
-            self.speed = random.randint(1, 4)
-            self.sprite = sprite
-        else:  # if right -> left
-            self.yPos = ypos
+        #if not back:  # if left -> right
+        self.yPos = ypos
+        self.xPos = 0
+        self.back = back
+        self.speed = random.randint(1, 4)
+        self.sprite = sprite
+        
+        if back:
             self.xPos = width
-            self.back = back
-            self.speed = - random.randint(1, 4)
-            self.sprite = sprite
+            self.speed = - self.speed
+            self.sprite = ReverseFish(self.sprite)
 
 
     def up(self):
@@ -47,6 +59,9 @@ class ChildFish:
         self.off = off
         self.sprite = sprite
         
+        if parent.back:
+            self.sprite = ReverseFish(self.sprite)
+
         # update other values
         self.up()
         
@@ -81,7 +96,6 @@ async def sizeUp():  # check terminal size
 def draw(wave):
     # print sky
     console = "\n" * sky + "\n"
-    #console = ""
     
     # print top of sea
     if wave == 1:
@@ -125,11 +139,8 @@ def draw(wave):
 
 def spawn():
     y = random.randint(2, depth)
-    backwards = bool(random.getrandbits(1))  # if fish is going from left to right or right to 
-    if backwards:  # if right -> left
-        fish.append(Fish(y, backwards, sprite = random.choice(backSprites)))  # use backwards sprite
-    else:
-        fish.append(Fish(y, backwards, sprite = random.choice(sprites)))
+    backwards = bool(random.getrandbits(1))  # if fish is going from left to right or right to left
+    fish.append(Fish(y, backwards, sprite = random.choice(sprites)))
 
 
 # big boys
@@ -140,20 +151,14 @@ def spawn():
 #\ /   o\ 
 # |     < 
 #/ \____/
-# ___    
-#/o  \ / 
-#>    |  
-#\___/ \ 
+
 
 # borrow this from chris coz i need at least 2
 #    ________  
 #\  /        \ 
 # >|          >
 #/  \________/ 
-#  ________     
-# /        \  / 
-#<          |<  
-# \________/  \ 
+
 
 bigBoySprites = [[
     "   ____  ",
@@ -166,40 +171,19 @@ bigBoySprites = [[
     "/  \________/ "]
 ]
 
-backBigBoySprites = [[
-    " ___    ",
-    "/o  \ / ",
-    ">    |  ",
-    "\___/ \ "],[
-    "  ________     ",
-    " /        \  / ",
-    "<          |<  ",
-    " \________/  \ "]
-]
-
 
 def spawnBigBoy():
     # generate parent
     backwards = bool(random.getrandbits(1))  # if fish is going from left to right or right to 
     sprite = random.randint(1, len(bigBoySprites)-1)
     y = random.randint(2, depth - len(bigBoySprites))
-    if backwards:  # if right -> left
-        par = Fish(y, backwards, sprite = backBigBoySprites[sprite][0])  # use backwards sprite
-    else:
-        par = Fish(y, backwards, sprite = bigBoySprites[sprite][0])
+    par = Fish(y, backwards, sprite = bigBoySprites[sprite][0])
         
     fish.append(par)  # add parent to fish
     
     
-    # generate children
-    if backwards:
-        #for s in backBigBoySprites[sprite]:  # iterate through sprite
-        for s in range(1, len(backBigBoySprites[sprite])):  # iterate through positions in sprite
-            fish.append(ChildFish(par, s, backBigBoySprites[sprite][s]))  # add child to fish
-            
-    else:
-        for s in range(1, len(bigBoySprites[sprite])):  # iterate through positions in sprite
-            fish.append(ChildFish(par, s, bigBoySprites[sprite][s]))  # add child to fish
+    for s in range(1, len(bigBoySprites[sprite])):  # iterate through positions in sprite
+        fish.append(ChildFish(par, s, bigBoySprites[sprite][s]))  # add child to fish
     
 
 count = 0
