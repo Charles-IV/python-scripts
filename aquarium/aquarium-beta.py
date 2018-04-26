@@ -3,12 +3,12 @@ Charles IV
 Aquarium
 """
 
-import random, time
+import random, time, asyncio
 from shutil import get_terminal_size
 from cls import cls
 
 # set number of updates per second
-fps = 24
+fps = 15
 # get size of terminal
 width, depth = get_terminal_size()
 sky = depth // 8  # sky is 1/8 of screen
@@ -18,7 +18,7 @@ depth -= 2  # depth correction
 fish = []
 # arrays of sprites
 sprites = ["><>", "><##>", ">#-", ">[###]>", "]<@>", ">[>-"]
-backSprites = ["<><", "<##><", "-#<", "<[##]<", "<@>[", "-<]<"]
+backSprites = ["<><", "<##><", "-#<", "<[###]<", "<@>[", "-<]<"]
 
 
 class Fish:
@@ -36,8 +36,26 @@ class Fish:
             self.speed = - random.randint(1, 4)
             self.sprite = sprite
 
+
     def up(self):
         self.xPos += self.speed
+        
+        
+class ChildFish:
+    def __init__(self, parent, off, sprite):
+        self.parent = parent
+        self.off = off
+        self.sprite = sprite
+        
+        # update other values
+        self.up()
+        
+        
+    def up(self):
+        self.yPos = self.parent.yPos + self.off  # add offset
+        self.xPos = self.parent.xPos
+        self.back = self.parent.back
+        self.speed = self.parent.speed
 
 
 def getFishOnY(y):
@@ -47,6 +65,17 @@ def getFishOnY(y):
             fOnY.append(f)
 
     return fOnY
+    
+
+def sizeUp(width, depth, sky):  # check terminal size
+    if (width, (depth+sky+2)) != get_terminal_size():  # if size has changed
+        width, depth = get_terminal_size()
+        sky = depth // 8  # sky is 1/8 of screen
+        depth -= sky
+        depth -= 2  # depth correction
+        
+    return width, depth, sky
+
 
 
 def draw(wave):
@@ -103,18 +132,91 @@ def spawn():
         fish.append(Fish(y, backwards, sprite = random.choice(sprites)))
 
 
+# big boys
+
+# sprites:
+
+#   ____  
+#\ /   o\ 
+# |     < 
+#/ \____/
+# ___    
+#/o  \ / 
+#>    |  
+#\___/ \ 
+
+# borrow this from chris coz i need at least 2
+#    ________  
+#\  /        \ 
+# >|          >
+#/  \________/ 
+#  ________     
+# /        \  / 
+#<          |<  
+# \________/  \ 
+
+bigBoySprites = [[
+    "   ____  ",
+    "\ /   o\ ",
+    " |     < ",
+    "/ \____/ "],[
+    "    ________  ",
+    "\  /        \ ",
+    " >|          >",
+    "/  \________/ "]
+]
+
+backBigBoySprites = [[
+    " ___    ",
+    "/o  \ / ",
+    ">    |  ",
+    "\___/ \ "],[
+    "  ________     ",
+    " /        \  / ",
+    "<          |<  ",
+    " \________/  \ "]
+]
+
+
+def spawnBigBoy():
+    # generate parent
+    backwards = bool(random.getrandbits(1))  # if fish is going from left to right or right to 
+    sprite = random.randint(1, len(bigBoySprites)-1)
+    y = random.randint(2, depth - len(bigBoySprites))
+    if backwards:  # if right -> left
+        par = Fish(y, backwards, sprite = backBigBoySprites[sprite][0])  # use backwards sprite
+    else:
+        par = Fish(y, backwards, sprite = bigBoySprites[sprite][0])
+        
+    fish.append(par)  # add parent to fish
+    
+    
+    # generate children
+    if backwards:
+        #for s in backBigBoySprites[sprite]:  # iterate through sprite
+        for s in range(1, len(backBigBoySprites[sprite])):  # iterate through positions in sprite
+            fish.append(ChildFish(par, s, backBigBoySprites[sprite][s]))  # add child to fish
+            
+    else:
+        for s in range(1, len(bigBoySprites[sprite])):  # iterate through positions in sprite
+            fish.append(ChildFish(par, s, bigBoySprites[sprite][s]))  # add child to fish
+    
+
 count = 0
 nextSpawn = random.randint(5, 10)
 waveCount = 1
 
 spawn()
+spawnBigBoy()
+
 
 while True:
     # correct terminal size
-    width, depth = get_terminal_size()
-    sky = depth // 8  # sky is 1/8 of screen
-    depth -= sky
-    depth -= 2  # depth correction
+    #width, depth = get_terminal_size()
+    #sky = depth // 8  # sky is 1/8 of screen
+    #depth -= sky
+    #depth -= 2  # depth correction
+    width, depth, sky = sizeUp(width, depth, sky)
     
     for f in fish:
         f.up()
@@ -133,7 +235,11 @@ while True:
 
     count += 1
     if count == nextSpawn:
-        spawn()
+        if bool(random.getrandbits(1)):  # spawn normal fish or big boy
+            spawn()
+        else:
+            spawnBigBoy()
+            
         count = 0
     
     waveCount += 0.5
