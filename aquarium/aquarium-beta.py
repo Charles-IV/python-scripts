@@ -175,7 +175,7 @@ bigBoySprites = [[
 def spawnBigBoy():
     # generate parent
     backwards = bool(random.getrandbits(1))  # if fish is going from left to right or right to 
-    sprite = random.randint(1, len(bigBoySprites)-1)
+    sprite = random.randint(0, len(bigBoySprites)-1)
     y = random.randint(2, depth - len(bigBoySprites))
     par = Fish(y, backwards, sprite = bigBoySprites[sprite][0])
         
