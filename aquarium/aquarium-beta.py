@@ -3,14 +3,15 @@ Charles IV
 Aquarium
 """
 
-import random, time, asyncio
+import random, time
 from shutil import get_terminal_size
 from cls import cls
 
 # set number of updates per second
-fps = 15
+fps = 17
 # get size of terminal
 width, depth = get_terminal_size()
+prevSize = get_terminal_size()
 sky = depth // 8  # sky is 1/8 of screen
 depth -= sky
 depth -= 2  # depth correction
@@ -82,15 +83,15 @@ def getFishOnY(y):
     return fOnY
     
 
-async def sizeUp():  # check terminal size
-    global width, depth, sky
-    while True:
-        await asyncio.sleep(1/fps)
-        if (width, (depth+sky+2)) != get_terminal_size():  # if size has changed
-            width, depth = get_terminal_size()
-            sky = depth // 8  # sky is 1/8 of screen
-            depth -= sky
-            depth -= 2  # depth correction
+def sizeUp(width, depth, sky, prevSize):  # check terminal size
+    if prevSize != get_terminal_size():  # if size has changed
+        width, depth = get_terminal_size()
+        prevSize = get_terminal_size()
+        sky = depth // 8  # sky is 1/8 of screen
+        depth -= sky
+        depth -= 2  # depth correction
+        
+    return width, depth, sky, prevSize
             
 
 def draw(wave):
@@ -194,39 +195,32 @@ spawn()
 spawnBigBoy()
 
 
-async def main():
-    global count, nextSpawn, waveCount
-    while True:        
-        for f in fish:
-            f.up()
-            # remove fish from array when off screen
-            if not f.back:
-                if f.xPos > width:
-                    fish.remove(f)
-            else:
-                if f.xPos < 0:
-                    fish.remove(f)
-        
-        draw(int(waveCount))
-        
-        if waveCount == 3:
-            waveCount = 0.5  # it will be one at the end of the loop
+while True:
+    width, depth, sky, prevSize = sizeUp(width, depth, sky, prevSize)
+    for f in fish:
+        f.up()
+        # remove fish from array when off screen
+        if not f.back:
+            if f.xPos > width:
+                fish.remove(f)
+        else:
+            if f.xPos < 0:
+                fish.remove(f)
+    
+    draw(int(waveCount))
+    
+    if waveCount == 3:
+        waveCount = 0.5  # it will be one at the end of the loop
 
-        count += 1
-        if count == nextSpawn:
-            if bool(random.getrandbits(1)):  # spawn normal fish or big boy
-                spawn()
-            else:
-                spawnBigBoy()
-                
-            count = 0
-        
-        waveCount += 0.5
-        
-        await asyncio.sleep(1/fps)
-
-
-loop = asyncio.get_event_loop()
-asyncio.ensure_future(main())
-asyncio.ensure_future(sizeUp())
-loop.run_forever()
+    count += 1
+    if count == nextSpawn:
+        if bool(random.getrandbits(1)):  # spawn normal fish or big boy
+            spawn()
+        else:
+            spawnBigBoy()
+            
+        count = 0
+    
+    waveCount += 0.5
+    
+    time.sleep(1/fps)
