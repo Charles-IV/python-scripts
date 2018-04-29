@@ -16,18 +16,18 @@ width, depth = get_terminal_size()
 prevSize = get_terminal_size()
 sky = depth // 8  # sky is 1/8 of screen
 depth -= sky
-depth -= 1  # depth correction
+depth -= 3  # depth correction
 # arrays for objects
 fish = []
 bubbles = []
 # array of sprites
-sprites = ["><>", "><##>", ">#-", ">[###]>", "]<@>", ">[>-"]
+sprites = ["><>", "><##>", ">#-", ">[###]>", "]<@>", ">[>-", "><(((('>"]
 
 
 def ReverseFish(revFish):
-    start = [">", "<", "]", "[", "}", "{", "/", "\\"]
-    code =  ["1", "2", "3", "4", "5", "6", "7", "8" ]
-    end =   ["<", ">", "[", "]", "{", "}", "\\", "/"]
+    start = [">", "<", "]", "[", "}", "{", "/", "\\", "(", ")"]
+    code =  ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+    end =   ["<", ">", "[", "]", "{", "}", "\\", "/", ")", "("]
 
     for i in range(0, len(start)):
         revFish = revFish.replace(start[i], code[i])
@@ -97,7 +97,6 @@ class Bubble:
         self.yPos -= self.speed
         self.horizontal -= 1
         if self.horizontal == 0:
-        #if True:
             if bool(random.getrandbits(1)):  # go right or left
                 self.xPos += 1
             else:
@@ -129,7 +128,7 @@ def sizeUp(width, depth, sky, prevSize):  # check terminal size
         prevSize = get_terminal_size()
         sky = depth // 8  # sky is 1/8 of screen
         depth -= sky
-        depth -= 1  # depth correction
+        depth -= 3  # depth correction
         
     return width, depth, sky, prevSize
             
@@ -163,7 +162,8 @@ def draw(wave):
                     
             for f in fony:  # iterate through fish on this y
                 if len(y) in range(f.xPos, f.xPos+len(f.sprite)):  # if current x is in the fish
-                    char = f.sprite[len(y) - f.xPos]  # change the char that's being written
+                    if f.sprite[len(y) - f.xPos] != "£":
+                        char = f.sprite[len(y) - f.xPos]  # change the char that's being written
 
             if char == "":
                 if len(y) <= width:
@@ -212,34 +212,38 @@ def spawn():
 # /  /            \                           /  
 #/__/              \______  ___/_/_/_/__  ___/   
 #                         |/            |/       
+#  ____|\__        
+#>[________)==>----
 
 
 bigBoySprites = [[
-    "   ____  ",
-    "\ /   o\ ",
-    " |     < ",
-    "/ \____/ "],[
-    "    ________  ",
-    "\  /        \ ",
+    "£££____££",
+    "\£/   o\£",
+    " |     <£",
+    "/£\____/£"],[
+    "££££________££",
+    "\££/        \£",
     " >|          >",
-    "/  \________/ "],[
-    "__     ____|\____  ",
-    "\ \___/        0 \ ",
-    " | ___           < ",
-    "/_/   \___\_\____/ "],[
-    "                               |\               ",
-    "                               | \              ",
-    "___                _____|\_____|  \_________    ",
-    "\  \              /                         \   ",
-    " \  \            /                       @   \  ",
-    "  \  \_|\_______/                           _ \ ",
-    "   \                <             \ \      / \/ ",
-    "    |               <              \ \    |     ",
-    "   /  _  _______                    \ \   \/\__ ",
-    "  /  / |/       \                             / ",
-    " /  /            \                           /  ",
-    "/__/              \______  ___/_/_/_/__  ___/   ",
-    "                         |/            |/       "]
+    "/££\________/£"],[
+    "££____|\__££££££££",
+    ">[________)==>----"],[
+    "__£££££____|\____££",
+    "\ \___/        0 \£",
+    " | ___           <£",
+    "/_/£££\___\_\____/£"],[
+    "£££££££££££££££££££££££££££££££|\£££££££££££££££",
+    "£££££££££££££££££££££££££££££££| \££££££££££££££",
+    "___££££££££££££££££_____|\_____|  \_________££££",
+    "\  \££££££££££££££/                         \£££",
+    " \  \££££££££££££/                       @   \££",
+    "  \  \_|\_______/                           _ \£",
+    "   \                <             \ \      /£\/£",
+    "    |               <              \ \    |£££££",
+    "   /  _  _______                    \ \   \/\__£",
+    "  /  /£|/£££££££\                             /£",
+    " /  /££££££££££££\                           /££",
+    "/__/££££££££££££££\______  ___/_/_/_/__  ___/£££",
+    "£££££££££££££££££££££££££|/££££££££££££|/£££££££"]
     
 ]
 
@@ -315,3 +319,4 @@ while True:
     waveCount += 0.5
     
     time.sleep(1/fps)
+
