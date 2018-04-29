@@ -1,9 +1,11 @@
+#!/usr/bin/python3
+
 """
 Charles IV
 Aquarium
 """
 
-import random, time
+import random, time#, asyncio
 from shutil import get_terminal_size
 from cls import cls
 
@@ -14,7 +16,7 @@ width, depth = get_terminal_size()
 prevSize = get_terminal_size()
 sky = depth // 8  # sky is 1/8 of screen
 depth -= sky
-depth -= 2  # depth correction
+depth -= 1  # depth correction
 # array for fish
 fish = []
 # arrays of sprites
@@ -37,7 +39,6 @@ def ReverseFish(revFish):
     
 class Fish:
     def __init__(self, ypos, back, sprite):
-        #if not back:  # if left -> right
         self.yPos = ypos
         self.xPos = 0
         self.back = back
@@ -89,7 +90,7 @@ def sizeUp(width, depth, sky, prevSize):  # check terminal size
         prevSize = get_terminal_size()
         sky = depth // 8  # sky is 1/8 of screen
         depth -= sky
-        depth -= 2  # depth correction
+        depth -= 1  # depth correction
         
     return width, depth, sky, prevSize
             
@@ -110,32 +111,24 @@ def draw(wave):
 
     for i in range(1, depth):  # iterate through the depths
         y = ""  # write to this string then write the string to console
-        drawn = 0  # how many characters I have drawn on this y
         fony = getFishOnY(i)  # get the fish on that y
-        if len(fony) == 0:  # if there are no fish on that y
-            print()
-        else:
-            for x in range(0, width):  # go across the page
-                #drawn = 0  # how many characters I have drawn on this x
-                for f in fony:
-                    if f.xPos == (x + drawn):  # if the fish starts there
-                        for char in f.sprite:  # iterate through sprite
-                            if len(y) >= width:
-                                break  # don't draw if it it's going off edge
-                            else:
-                                y += char
-                                drawn += 1
-                    break  # so we don't draw two fish in the same position
-                    # this actually just doesn't print the fish if it is on the same line but oh well
 
-                if drawn == 0:  # if still haven't drawn sprite
-                    if x + drawn <= width:
-                        y += " "
+        for x in range(0, width):  # go across the page
+            char = ""  # character to be drawn
+            for f in fony:  # iterate through fish on this y
+                if len(y) in range(f.xPos, f.xPos+len(f.sprite)):  # if current x is in the fish
+                    char = f.sprite[len(y) - f.xPos]  # change the char that's being written
+
+            if char == "":
+                if len(y) <= width:
+                    char = " "
+            
+            y += char  # draw character to y
                     
-        console += y + "\n"
+        console += y + "\n"  # draw y to screen
         
-    cls()
-    print(console)
+    cls()  # clear old screen
+    print(console)  # draw new screen
 
 
 def spawn():
@@ -177,7 +170,7 @@ def spawnBigBoy():
     # generate parent
     backwards = bool(random.getrandbits(1))  # if fish is going from left to right or right to 
     sprite = random.randint(0, len(bigBoySprites)-1)
-    y = random.randint(2, depth - len(bigBoySprites))
+    y = random.randint(2, depth - len(bigBoySprites) - 2)
     par = Fish(y, backwards, sprite = bigBoySprites[sprite][0])
         
     fish.append(par)  # add parent to fish
@@ -192,7 +185,7 @@ nextSpawn = random.randint(5, 10)
 waveCount = 1
 
 spawn()
-spawnBigBoy()
+#spawnBigBoy()
 
 
 while True:
