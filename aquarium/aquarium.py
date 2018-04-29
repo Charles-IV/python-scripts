@@ -41,7 +41,7 @@ def ReverseFish(revFish):
 class Fish:
     def __init__(self, ypos, back, sprite):
         self.yPos = ypos
-        self.xPos = 0
+        self.xPos = - len(sprite)  # so it slowly comes onto the screen
         self.back = back
         self.speed = random.randint(1, 4)
         self.vertical = random.randint(1, 50)  # how long it takes till it goes up or down
@@ -251,7 +251,7 @@ while True:
             if f.xPos > width:
                 fish.remove(f)
         else:
-            if f.xPos < 0:
+            if f.xPos < 0 - len(f.sprite):
                 fish.remove(f)
     
     for b in bubbles:
