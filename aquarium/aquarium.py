@@ -43,6 +43,7 @@ class Fish:
         self.xPos = 0
         self.back = back
         self.speed = random.randint(1, 4)
+        self.vertical = random.randint(1, 50)  # how long it takes till it goes up or down
         self.sprite = sprite
         
         if back:
@@ -53,6 +54,13 @@ class Fish:
 
     def up(self):
         self.xPos += self.speed
+        self.vertical -= 1
+        if self.vertical == 0:  # if up down counter done
+            if bool(random.getrandbits(1)):  # go up or down
+                self.yPos += 1
+            else:
+                self.yPos -= 1
+            self.vertical = random.randint(1, 50)  # reset vertical counter
         
         
 class ChildFish:
