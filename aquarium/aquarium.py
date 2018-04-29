@@ -17,9 +17,10 @@ prevSize = get_terminal_size()
 sky = depth // 8  # sky is 1/8 of screen
 depth -= sky
 depth -= 1  # depth correction
-# array for fish
+# arrays for objects
 fish = []
-# arrays of sprites
+bubbles = []
+# array of sprites
 sprites = ["><>", "><##>", ">#-", ">[###]>", "]<@>", ">[>-"]
 
 
@@ -83,6 +84,27 @@ class ChildFish:
         self.speed = self.parent.speed
 
 
+class Bubble:
+    def __init__(self, ypos, xpos):
+        self.yPos = ypos
+        self.xPos = xpos
+        self.speed = random.randint(1, 2)
+        self.horizontal = random.randint(1, 3)
+        self.sprite = "o"
+        
+    
+    def up(self):
+        self.yPos -= self.speed
+        self.horizontal -= 1
+        if self.horizontal == 0:
+        #if True:
+            if bool(random.getrandbits(1)):  # go right or left
+                self.xPos += 1
+            else:
+                self.xPos -= 1
+            self.horizontal = random.randint(1, 3)  # reset horizontal counter
+        
+
 def getFishOnY(y):
     fOnY = []  # array with details of the fish on that y
     for f in fish:
@@ -90,6 +112,15 @@ def getFishOnY(y):
             fOnY.append(f)
 
     return fOnY
+    
+    
+def getBubOnY(y):
+    bubOnY = []  # array with bubbles on y
+    for b in bubbles:
+        if b.yPos == y:  # if buuble on row
+            bubOnY.append(b)
+            
+    return bubOnY
     
 
 def sizeUp(width, depth, sky, prevSize):  # check terminal size
@@ -120,9 +151,16 @@ def draw(wave):
     for i in range(1, depth):  # iterate through the depths
         y = ""  # write to this string then write the string to console
         fony = getFishOnY(i)  # get the fish on that y
+        bubony = getBubOnY(i)  # get bubbles on that y
 
         for x in range(0, width):  # go across the page
             char = ""  # character to be drawn
+            
+            # go through bubbles first so they are overwritten by fish
+            for b in bubony:
+                if len(y) == b.xPos:
+                    char = b.sprite
+                    
             for f in fony:  # iterate through fish on this y
                 if len(y) in range(f.xPos, f.xPos+len(f.sprite)):  # if current x is in the fish
                     char = f.sprite[len(y) - f.xPos]  # change the char that's being written
@@ -188,12 +226,20 @@ def spawnBigBoy():
         fish.append(ChildFish(par, s, bigBoySprites[sprite][s]))  # add child to fish
     
 
-count = 0
-nextSpawn = random.randint(5, 10)
+def spawnBubble():
+    y = random.randint(2, depth)
+    x = random.randint(0, width)
+    bubbles.append(Bubble(y, x))  # add bubble to array
+
+
+nextSpawn = random.randint(5, 20)
+nextBubble = random.randint(5, 10)
 waveCount = 1
 
+# spawn one of everything at start
 spawn()
-#spawnBigBoy()
+spawnBigBoy()
+spawnBubble()
 
 
 while True:
@@ -208,20 +254,33 @@ while True:
             if f.xPos < 0:
                 fish.remove(f)
     
+    for b in bubbles:
+        b.up()
+        if b.yPos == 0:
+            bubbles.remove(b)
+    
     draw(int(waveCount))
     
     if waveCount == 3:
         waveCount = 0.5  # it will be one at the end of the loop
 
-    count += 1
-    if count == nextSpawn:
+
+    nextSpawn -= 1
+    if nextSpawn == 0:
         if bool(random.getrandbits(1)):  # spawn normal fish or big boy
             spawn()
         else:
             spawnBigBoy()
-            
-        count = 0
+        
+        nextSpawn = random.randint(5, 20)
+        
+    nextBubble -= 1
+    if nextBubble == 0:
+        spawnBubble()
+        
+        nextBubble = random.randint(5, 10)
     
     waveCount += 0.5
     
     time.sleep(1/fps)
+
