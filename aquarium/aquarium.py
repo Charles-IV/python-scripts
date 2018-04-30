@@ -5,7 +5,7 @@ Charles IV
 Aquarium
 """
 
-import random, time#, asyncio
+import random, time, msvcrtReplace
 from shutil import get_terminal_size
 from cls import cls
 
@@ -22,6 +22,9 @@ fish = []
 bubbles = []
 # array of sprites
 sprites = ["><>", "><##>", ">#-", ">[###]>", "]<@>", ">[>-", "><(((('>"]
+
+# msvcrt stuff
+kb = msvcrtReplace.KBHit()
 
 
 def ReverseFish(revFish):
@@ -102,6 +105,28 @@ class Bubble:
             else:
                 self.xPos -= 1
             self.horizontal = random.randint(1, 3)  # reset horizontal counter
+            
+            
+class PlayerFish:
+    def __init__(self):
+        self.sprite = "__£££££____|\____££"  # top of shark
+        self.yPos = random.randint(2, depth)
+        self.xPos = 0
+        self.back = False
+        self.speed = 0
+
+
+    def up(self, inp):
+        if inp == "w":
+            self.yPos -= 1
+        elif inp == "s":
+            self.yPos += 1
+
+        elif inp == "a":
+            self.xPos -= 1
+
+        elif inp == "d":
+            self.xPos += 1
         
 
 def getFishOnY(y):
@@ -109,6 +134,15 @@ def getFishOnY(y):
     for f in fish:
         if f.yPos == y:  # if the fish is on that row
             fOnY.append(f)
+            
+    if player.yPos == y:  # if player is on that y
+        fOnY.append(player)  # add player to array of fish
+        
+    for f in fOnY:
+        if type(f) == ChildFish:  # if child
+            if f.parent == player:  # if part of player
+                fOnY.remove(f)
+                fOnY.append(f)  # move spite to back, so it's on top
 
     return fOnY
     
@@ -268,6 +302,15 @@ def spawnBubble():
     bubbles.append(Bubble(y, x))  # add bubble to array
 
 
+def spawnPlayer():
+    player = PlayerFish()
+    
+    for i in range(1, len(bigBoySprites[3])):  # iterate through other positions in sprite
+        fish.append(ChildFish(player, i, bigBoySprites[3][i]))  # add child to fish
+        
+    return player
+    
+
 nextSpawn = random.randint(5, 20)
 nextBubble = random.randint(5, 10)
 waveCount = 1
@@ -276,10 +319,17 @@ waveCount = 1
 spawn()
 spawnBigBoy()
 spawnBubble()
+player = spawnPlayer()
 
 
 while True:
     width, depth, sky, prevSize = sizeUp(width, depth, sky, prevSize)
+    
+    # get player input
+    
+    if kb.kbhit():
+        player.up(kb.getch())
+    
     for f in fish:
         f.up()
         # remove fish from array when off screen
