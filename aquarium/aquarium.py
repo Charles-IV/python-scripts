@@ -61,7 +61,8 @@ class Fish:
             if bool(random.getrandbits(1)):  # go up or down
                 self.yPos += 1
             else:
-                self.yPos -= 1
+                if self.yPos > 1:  # if not at top
+                    self.yPos -= 1  # let it go up
             self.vertical = random.randint(1, 50)  # reset vertical counter
         
         
@@ -124,8 +125,8 @@ class PlayerFish:
             
         # check their input
         if inp == "w":
-            if self.yPos > 0:  # if it's not at the top, let it go up
-                self.yPos -= 1  # idk it's -=, it just is, ok?
+            if self.yPos > 1:  # if it's not at the top, let it go up
+                self.yPos -= 1
         elif inp == "s":
             if self.yPos < depth:  # if it's not at the bottom, let it go down
                 self.yPos += 1
