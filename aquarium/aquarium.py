@@ -23,8 +23,6 @@ bubbles = []
 # array of sprites
 sprites = ["><>", "><##>", ">#-", ">[###]>", "]<@>", ">[>-", "><(((('>"]
 
-# msvcrt stuff
-kb = msvcrtReplace.KBHit()
 
 
 def ReverseFish(revFish):
@@ -117,16 +115,31 @@ class PlayerFish:
 
 
     def up(self, inp):
+        # check position
+        if self.xPos < 0 - (len(self.sprite) // 2):  # if halfway off screen
+            self.speed = 5  # bounce over to the right
+            
+        elif self.xPos > width - (len(self.sprite) // 2):
+            self.speed = -5
+            
+        # check their input
         if inp == "w":
-            self.yPos -= 1
+            if self.yPos > 0:  # if it's not at the top, let it go up
+                self.yPos -= 1  # idk it's -=, it just is, ok?
         elif inp == "s":
-            self.yPos += 1
+            if self.yPos < depth:  # if it's not at the bottom, let it go down
+                self.yPos += 1
 
         elif inp == "a":
-            self.xPos -= 1
+            self.speed -= 1
 
         elif inp == "d":
-            self.xPos += 1
+            self.speed += 1
+            
+        # momentum type thing
+        self.speed *= 0.9
+            
+        self.xPos += int(self.speed)
         
 
 def getFishOnY(y):
@@ -135,14 +148,15 @@ def getFishOnY(y):
         if f.yPos == y:  # if the fish is on that row
             fOnY.append(f)
             
-    if player.yPos == y:  # if player is on that y
-        fOnY.append(player)  # add player to array of fish
-        
-    for f in fOnY:
-        if type(f) == ChildFish:  # if child
-            if f.parent == player:  # if part of player
-                fOnY.remove(f)
-                fOnY.append(f)  # move spite to back, so it's on top
+    if playable == "1":  # if playable mode
+        if player.yPos == y:  # if player is on that y
+            fOnY.append(player)  # add player to array of fish
+            
+        for f in fOnY:
+            if type(f) == ChildFish:  # if child
+                if f.parent == player:  # if part of player
+                    fOnY.remove(f)
+                    fOnY.append(f)  # move spite to back, so it's on top
 
     return fOnY
     
@@ -150,7 +164,7 @@ def getFishOnY(y):
 def getBubOnY(y):
     bubOnY = []  # array with bubbles on y
     for b in bubbles:
-        if b.yPos == y:  # if buuble on row
+        if b.yPos == y:  # if bubble on row
             bubOnY.append(b)
             
     return bubOnY
@@ -311,6 +325,31 @@ def spawnPlayer():
     return player
     
 
+# Start
+
+cls()
+print("\n\n\n\n",
+"       Welcome to Aquarium!  (def not a copy of fish)\n\n",
+"       Do you want to:\n",
+"           1. Use playable fish (WASD)\n",
+"           2. Normal mode")
+#playGood = False  # if their input is good or bad
+while True:
+    playable = input("\n        >>>")
+    if playable != "1" and playable != "2":
+        print("\n        Error:\n             Please enter '1' or '2' without speech marks")
+    else:  # if good input
+        break  # exit loop
+        
+cls()
+print("\n\n\n\n",
+"       On Windows, make sure the console buffer is larger than the actual\n        size\n\n",
+"       F11 should also improve performance\n\n\n",
+"       Adjust the fps variable near the top of aquarium.py if experiencing\n        flickering.\n\n",
+"       On slower systems, you may be able to comment the\n        `time.sleep(1/fps)` line at the bottom\n",
+"       (put a # at the start of that line if you're a python n00b)")
+input("\n     (Press enter to continue)")
+
 nextSpawn = random.randint(5, 20)
 nextBubble = random.randint(5, 10)
 waveCount = 1
@@ -319,16 +358,23 @@ waveCount = 1
 spawn()
 spawnBigBoy()
 spawnBubble()
-player = spawnPlayer()
+if playable == "1":  # if playable mode
+    # msvcrt stuff
+    kb = msvcrtReplace.KBHit()
+    
+    player = spawnPlayer()  # spawn player fish
 
 
 while True:
     width, depth, sky, prevSize = sizeUp(width, depth, sky, prevSize)
     
-    # get player input
-    
-    if kb.kbhit():
-        player.up(kb.getch())
+    if playable == "1":  # if player mode
+        # get player input
+        if kb.kbhit():  # if they entered a character
+            player.up(kb.getch())
+        else:
+            player.up("null")  # still update sprite - to run checks on position etc.
+        
     
     for f in fish:
         f.up()
@@ -369,4 +415,3 @@ while True:
     waveCount += 0.5
     
     time.sleep(1/fps)
-
