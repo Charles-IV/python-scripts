@@ -263,6 +263,27 @@ def spawn():
 #                         |/            |/       
 #  ____|\__        
 #>[________)==>----
+#|\   \\\\__  
+#| \_/    o \ 
+#> _   (( <_  
+#| / \__+___/ 
+#|/     |/
+#     |\    
+#    |  \   
+#|\ /    .\ 
+#| |       (
+#|/ \     / 
+#    |  /   
+#     |/
+#      \/)/)    
+#    _'  oo(_.-.
+#  /'.     .---'
+#/'-./    (     
+#)     ; __\    
+#\_.'\ : __|    
+#     )  _/     
+#    (  (,.     
+#     '-.-'     
 
 
 bigBoySprites = [[
@@ -270,10 +291,31 @@ bigBoySprites = [[
     "\£/   o\£",
     " |     <£",
     "/£\____/£"],[
+    "£££££|\££££",
+    "££££|  \£££",
+    "|\£/    .\£",
+    "| |       (",
+    "|/£\     /£",
+    "££££|  /£££",
+    "£££££|/££££"],[
+    "|\£££\\\\\\\\__££",
+    "| \_/    o \£",
+    "> _   (( <_££",
+    "| /£\__+___/£",
+    "|/£££££|/££££"],[
     "££££________££",
     "\££/        \£",
     " >|          >",
     "/££\________/£"],[
+    "££££££\/)/)££££",
+    "££££_'  oo(_.-.",
+    "££/'.     .---'",
+    "/'-./    (£££££",
+    ")     ; __\££££",
+    "\_.'\ : __|££££",
+    "£££££)  _/£££££",
+    "££££(  (,.£££££",
+    "£££££'-.-'£££££"],[
     "££____|\__££££££££",
     ">[________)==>----"],[
     "__£££££____|\____££",
@@ -319,9 +361,14 @@ def spawnBubble():
 
 def spawnPlayer():
     player = PlayerFish()
+    spriteIndex = bigBoySprites.index([
+        "__£££££____|\____££",
+        "\ \___/        0 \£",
+        " | ___           <£",
+        "/_/£££\___\_\____/£"])  # find index of sprite
     
-    for i in range(1, len(bigBoySprites[3])):  # iterate through other positions in sprite
-        fish.append(ChildFish(player, i, bigBoySprites[3][i]))  # add child to fish
+    for i in range(1, len(bigBoySprites[spriteIndex])):  # iterate through other positions in sprite
+        fish.append(ChildFish(player, i, bigBoySprites[spriteIndex][i]))  # add child to fish
         
     return player
     
@@ -372,7 +419,7 @@ while True:
     if playable == "1":  # if player mode
         # get player input
         if kb.kbhit():  # if they entered a character
-            player.up(kb.getch())
+            player.up(kb.getch().lower())
         else:
             player.up("null")  # still update sprite - to run checks on position etc.
         
@@ -416,3 +463,4 @@ while True:
     waveCount += 0.5
     
     time.sleep(1/fps)
+    
