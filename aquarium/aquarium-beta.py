@@ -27,8 +27,8 @@ sprites = ["><>", "><##>", ">#-", ">[###]>", "]<@>", ">[>-", "><(((('>"]
 
 def ReverseFish(revFish):
     start = [">", "<", "]", "[", "}", "{", "/", "\\", "(", ")"]
-    code =  ["1", "2", "3", "4", "5", "6", "7", "8", "9", "a" ]
-    end =   ["<", ">", "[", "]", "{", "}", "\\", "/", ")", "("]
+    code  = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "a" ]
+    end   = ["<", ">", "[", "]", "{", "}", "\\", "/", ")", "("]
 
     for i in range(0, len(start)):
         revFish = revFish.replace(start[i], code[i])
@@ -46,10 +46,6 @@ class Fish:
         self.back = back
         self.speed = random.randint(1, 4)
         self.vertical = random.randint(1, 50)  # how long it takes till it goes up or down
-        self.nextTurn = random.randint(2, 50)
-        self.turning = False
-        self.oldLen = len(sprite)
-        self.halfTurned = False
         self.sprite = sprite
         
         if back:
@@ -57,11 +53,16 @@ class Fish:
             self.speed = - self.speed
             self.sprite = ReverseFish(self.sprite)
             
+        # turning stuff
+        self.nextTurn = random.randint(2, 50)
+        self.turning = False
+        self.oldLen = len(sprite)
+        self.halfTurned = False
         self.oldSprite = self.sprite  # so we know what it is when turning
 
 
     def up(self):
-        if not self.turning or self.back:  # TODO: remove self.back when done
+        if not self.turning:
             self.nextTurn -= 1
             if self.nextTurn == 0:  # if now need to turn
                 self.turning = True
@@ -77,7 +78,7 @@ class Fish:
                         self.yPos -= 1  # let it go up
                 self.vertical = random.randint(1, 50)  # reset vertical counter
                 
-        else:
+        else:  # if turning
             if not self.back:
                 if not self.halfTurned:  # if still going forward
                     self.xPos += 1
@@ -89,13 +90,28 @@ class Fish:
                         
                 else:  # if now going backwards
                     self.xPos -= 1
-                    self.sprite +=ReverseFish(self.oldSprite)[len(self.sprite)]  # add next character
+                    self.sprite += ReverseFish(self.oldSprite)[len(self.sprite)]  # add next character
                     if len(self.sprite) == self.oldLen:  # if done
                         self.turning = False  # finally!
                         self.halfTurned = False
                         self.back = True
                         self.oldSprite = self.sprite
-                    
+                        
+            else:
+                if not self.halfTurned:  # if still going backwards
+                    self.sprite = self.sprite[1:]  # remove first character
+                    if len(self.sprite) == 0:  # if run out of characters
+                        self.halfTurned = True
+                        self.speed = - self.speed
+                        self.sprite = ReverseFish(self.oldSprite)[-1]  # put first character in place
+                        
+                else:  # if now going forwards
+                    self.sprite = ReverseFish(self.oldSprite)[-(len(self.sprite)+1)] + self.sprite # add next character
+                    if len(self.sprite) == self.oldLen:  # if done
+                        self.turning = False  # finally!
+                        self.halfTurned = False
+                        self.back = False
+                        self.oldSprite = self.sprite
         
         
 class ChildFish:
@@ -106,7 +122,11 @@ class ChildFish:
         
         if parent.back:
             self.sprite = ReverseFish(self.sprite)
-
+            
+        # turning stuff
+        self.oldLen = len(self.sprite)
+        self.oldSprite = self.sprite  # so we know what it is when turning
+        
         # update other values
         self.up()
         
@@ -115,7 +135,49 @@ class ChildFish:
         self.yPos = self.parent.yPos + self.off  # add offset
         self.xPos = self.parent.xPos
         self.back = self.parent.back
-        self.speed = self.parent.speed
+        # self.speed = self.parent.speed - do we even need this
+        
+        # turning stuff
+        # self.nextTurn = self.parent.nextTurn
+        # self.turning = self.parent.turning - done by parent (dbp)  TODO: remove when done
+        #self.oldLen = len(self.sprite) - don't want to update every time
+        # self.halfTurned = self.parent.halfTurned
+        #self.oldSprite = self.sprite  # so we know what it is when turning
+        
+        if self.parent.turning:
+            if not self.parent.back:
+                if not self.parent.halfTurned:  # if still going forward
+                    # self.xPos += 1 - dbp
+                    self.sprite = self.sprite[:-1]  # remove last character
+                    if len(self.sprite) == 0:  # if run out of characters
+                        # self.halfTurned = True
+                        # self.speed = - self.speed - don't need speed
+                        self.sprite = ReverseFish(self.oldSprite)[0]  # put first character in place
+                        
+                else:  # if now going backwards
+                    # self.xPos -= 1 -dbp
+                    self.sprite += ReverseFish(self.oldSprite)[len(self.sprite)]  # add next character
+                    if len(self.sprite) == self.oldLen:  # if done
+                        # self.turning = False  # finally!
+                        # self.halfTurned = False
+                        # self.back = True - dbp
+                        self.oldSprite = self.sprite
+                        
+            else:
+                if not self.parent.halfTurned:  # if still going backwards
+                    self.sprite = self.sprite[1:]  # remove first character
+                    if len(self.sprite) == 0:  # if run out of characters
+                        # self.halfTurned = True - dbp
+                        # self.speed = - self.speed - don't need speed
+                        self.sprite = ReverseFish(self.oldSprite)[-1]  # put first character in place
+                        
+                else:  # if now going forwards
+                    self.sprite = ReverseFish(self.oldSprite)[-len(self.sprite)-1] + self.sprite # add next character
+                    if len(self.sprite) == self.oldLen:  # if done
+                        # self.turning = False  # finally!
+                        # self.halfTurned = False
+                        # self.back = False - dbp
+                        self.oldSprite = self.sprite
 
 
 class Bubble:
@@ -145,34 +207,83 @@ class PlayerFish:
         self.xPos = 0
         self.back = False
         self.speed = 0
+        
+        # turning stuff
+        self.turning = False
+        self.oldLen = len(self.sprite)
+        self.halfTurned = False
+        self.oldSprite = self.sprite  # so we know what it is when turning
 
 
     def up(self, inp):
-        # check position
-        if self.xPos < 0 - (len(self.sprite) // 2):  # if halfway off screen
-            self.speed = 5  # bounce over to the right
-            
-        elif self.xPos > width - (len(self.sprite) // 2):
-            self.speed = -5
-            
-        # check their input
-        if inp == "w":
-            if self.yPos > 1:  # if it's not at the top, let it go up
-                self.yPos -= 1
-        elif inp == "s":
-            if self.yPos < depth:  # if it's not at the bottom, let it go down
-                self.yPos += 1
+        if not self.turning:
+            # check position
+            if self.xPos < 0 - (len(self.sprite) // 2):  # if halfway off screen
+                self.speed = 5  # bounce over to the right
+                
+            elif self.xPos > width - (len(self.sprite) // 2):
+                self.speed = -5
+                
+            # check their input
+            if inp == "w":
+                if self.yPos > 1:  # if it's not at the top, let it go up
+                    self.yPos -= 1
+            elif inp == "s":
+                if self.yPos < depth:  # if it's not at the bottom, let it go down
+                    self.yPos += 1
 
-        elif inp == "a":
-            self.speed -= 1
+            elif inp == "a":
+                self.speed -= 1
+                if not self.back:
+                    if self.speed < 1:  # if about to turn
+                        self.turning = True
 
-        elif inp == "d":
-            self.speed += 1
+            elif inp == "d":
+                self.speed += 1
+                if self.back:
+                    if self.speed > -1:  # if about to turn
+                        self.turning = True
+                
+            # momentum type thing
+            self.speed *= 0.9
+                
+            self.xPos += int(self.speed)
             
-        # momentum type thing
-        self.speed *= 0.9
+        else:  # if turning
+            if not self.back:
+                if not self.halfTurned:  # if still going forward
+                    self.xPos += 1
+                    self.sprite = self.sprite[:-1]  # remove last character
+                    if len(self.sprite) == 0:  # if run out of characters
+                        self.halfTurned = True
+                        #self.speed = - self.speed
+                        self.sprite = ReverseFish(self.oldSprite)[0]  # put first character in place
+                        
+                else:  # if now going backwards
+                    self.xPos -= 1
+                    self.sprite += ReverseFish(self.oldSprite)[len(self.sprite)]  # add next character
+                    if len(self.sprite) == self.oldLen:  # if done
+                        self.turning = False  # finally!
+                        self.halfTurned = False
+                        self.back = True
+                        self.oldSprite = self.sprite
+                        
+            else:
+                if not self.halfTurned:  # if still going backwards
+                    self.sprite = self.sprite[1:]  # remove first character
+                    if len(self.sprite) == 0:  # if run out of characters
+                        self.halfTurned = True
+                        #self.speed = - self.speed
+                        self.sprite = ReverseFish(self.oldSprite)[-1]  # put first character in place
+                        
+                else:  # if now going forwards
+                    self.sprite = ReverseFish(self.oldSprite)[-(len(self.sprite)+1)] + self.sprite # add next character
+                    if len(self.sprite) == self.oldLen:  # if done
+                        self.turning = False  # finally!
+                        self.halfTurned = False
+                        self.back = False
+                        self.oldSprite = self.sprite
             
-        self.xPos += int(self.speed)
         
 
 def getFishOnY(y):
