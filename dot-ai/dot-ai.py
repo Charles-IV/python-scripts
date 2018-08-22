@@ -103,7 +103,8 @@ def draw():
 # add goal to objects - no need - checked manually by draw() - change later
 # generate dots
 for x in range(0, 9):  # population of 10
-    dots.append(Dot)
+    dots.append(Dot())
+
 # add them to object
 for d in dots:  # go through dots
     objects.append(d)  # add the dot to the array
