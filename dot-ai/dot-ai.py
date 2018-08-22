@@ -71,7 +71,7 @@ def onLine(line):  # function to find the opbjects on that line
         if ob.pos[1] == line:  # if y value is same as line being printed
             onLine.append(ob)  # add the object to the array
 
-    return onLine
+    return online
 
 
 def draw():
