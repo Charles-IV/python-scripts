@@ -119,7 +119,7 @@ def calcFit(d):  # calculate the fitness of the dot
     xdist = abs(goal[0]-d.pos[0])
     ydist = abs(goal[1]-d.pos[1])
     dist = xdist + ydist
-    d.fitness = 1/((dist**2) * d.steps)
+    d.fitness = 1/((dist**2) + d.steps)  # add steps to avoid dividing by 0
 
 
 def makeBaby():  # selects a parent, mutates and returns it
@@ -140,9 +140,9 @@ def makeBaby():  # selects a parent, mutates and returns it
 
     # mutate parents genes
     child = Dot(parent.log)
-    for i in child.log:  # go through the steps in the log
+    for i in range(0, len(child.log)):  # go through the steps in the log
         if random.randint(1, 10) == 1:  # 1/10 chance of mutation
-            i = random.randint(1, 4)  # re-write direction in log
+            child.log[i] = random.randint(1, 4)  # re-write direction in log
 
     return child
 
