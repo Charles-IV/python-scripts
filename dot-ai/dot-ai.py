@@ -90,10 +90,10 @@ def onLine(line):  # function to find the opbjects on that line
 
 def draw(gen, currstep):
     screen = ""  # what will be put onto the console
-    for y in range(20, 1, -1):  # to go from 10 to 1, as 1 is at the bottom
+    for y in range(20, 0, -1):  # to go from 10 to 1, as 1 is at the bottom
         line = " "  # what will go onto the line - one space buffer on left
         obs = onLine(y)  # get the objects on the line
-        for x in range(1, 20):  # go through the x positions on the line
+        for x in range(1, 21):  # go through the x positions on the line
             char = "-"  # character to be drawn (will be space if nothing there)
 
             # do goal fist so it#s overwritten by dots
@@ -119,7 +119,9 @@ def calcFit(d):  # calculate the fitness of the dot
     xdist = abs(goal[0]-d.pos[0])
     ydist = abs(goal[1]-d.pos[1])
     dist = xdist + ydist
-    d.fitness = 1/((dist**2) + d.steps)  # add steps to avoid dividing by 0
+    #d.fitness = 1/((dist**2) + d.steps)  # add steps to avoid dividing by 0
+    maxdist = abs(goal[0]-10) + abs(goal[1]-1)
+    d.fitness = ((maxdist-dist)/ maxdist) + (stepspergen-d.steps)
 
 
 def makeBaby():  # selects a parent, mutates and returns it
