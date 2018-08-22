@@ -66,12 +66,12 @@ def cls():  # function to clear the terminal screen
 
 
 def onLine(line):  # function to find the opbjects on that line
-    online = []  # the objects on that line
+    o = []  # the objects on that line
     for ob in objects:  # iterate through objects
         if ob.pos[1] == line:  # if y value is same as line being printed
-            onLine.append(ob)  # add the object to the array
+            o.append(ob)  # add the object to the array
 
-    return online
+    return o
 
 
 def draw():
@@ -113,5 +113,7 @@ for d in dots:  # go through dots
 
 
 while genDone == False:  # ima gonna need to ^C this stuff
+    for d in dots:
+        d.up()
     draw()
     time.sleep(1)  # so you can see it, and to give my cpu a rest
