@@ -1,2 +1,2 @@
 # python-scripts
-Some useful python scripts I may or may not have made.
+Some python scripts I have made or find useful.
