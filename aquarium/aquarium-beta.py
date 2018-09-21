@@ -5,9 +5,10 @@ Charles IV
 Aquarium
 """
 
-import random, time, msvcrtReplace
+import random, time
 from shutil import get_terminal_size
 from cls import cls
+from keyboard import is_pressed
 
 # set number of updates per second
 fps = 18
@@ -550,9 +551,6 @@ spawn()
 spawnBigBoy()
 spawnBubble()
 if playable == "1":  # if playable mode
-    # msvcrt stuff
-    kb = msvcrtReplace.KBHit()
-    
     player = spawnPlayer()  # spawn player fish
 
 
@@ -561,8 +559,14 @@ while True:
     
     if playable == "1":  # if player mode
         # get player input
-        if kb.kbhit():  # if they entered a character
-            player.up(kb.getch().lower())
+        if is_pressed("w"):  # there must be a more efficient way of doing this
+            player.up("w")
+        elif is_pressed("a"):
+            player.up("a")
+        elif is_pressed("s"):
+            player.up("s")
+        elif is_pressed("d"):
+            player.up("d")
         else:
             player.up("null")  # still update sprite - to run checks on position etc.
         
