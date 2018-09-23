@@ -4,10 +4,16 @@ Bubble Sort
 Prints every step, notifies you of a new pass
 """
 
-names = ["Li", "N", "Et", "M", "Lu", "O", "A", "Lo", "J", "El"]
+names = input("Enter list, seperated by commas and no spaces.\n> ").split(",")
+order = input("Order list ascending from smallest to largest? [Y/n]: ")
+
+if order == "n":
+	order = ">"
+else:
+	order = "<"
 
 
-def bubbleSort(arr):
+def bubbleSort(arr, order):
     lArr = len(arr)
     sortDone = False
     sortHappened = False  # if something was moved
@@ -15,7 +21,7 @@ def bubbleSort(arr):
         print("Pass")  # notify it's starting a new pass
         sortHappened = False
         for i in range(1, lArr):  # 1 pass through array
-            if arr[i] < arr[i-1]:  # if later position should be before earlier:
+            if eval(arr[i] + order + arr[i-1]):  # if later position should be before earlier:
                 temp = arr[i-1]  # save earlier to temporary var
                 arr[i-1] = arr[i]  # replace earlier with later
                 arr[i] = temp  # # replace later with earlier
@@ -30,7 +36,7 @@ def bubbleSort(arr):
             sortDone = True  # stop looping
 
 
-bubbleSort(names)
+bubbleSort(names, order)
 
 """
 Please excuse any inefficiency. I've got this working, and just remembered to remove all of the test prints I had.
