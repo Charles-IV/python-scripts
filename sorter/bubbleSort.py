@@ -20,19 +20,22 @@ def bubbleSort(arr, order):
     sortHappened = False  # if something was moved
     while not sortDone:
         print("Pass {} started".format(passNo))  # notify it's starting a new pass
-        sortHappened = False
+        swaps = 0
+        print(arr)  # print what array starts as on each pass
         for i in range(1, lArr-(passNo-1)):  # 1 pass through array, don't check sorted numbers
             if eval(arr[i] + order + arr[i-1]):  # if later position should be before earlier:
                 temp = arr[i-1]  # save earlier to temporary var
                 arr[i-1] = arr[i]  # replace earlier with later
                 arr[i] = temp  # # replace later with earlier
-                sortHappened = True
+                swaps += 1
                 print(arr)
             else:
                 print(arr)
+        
+        print("Pass {} done with {} comparisons and {} swap{}".format(passNo, (lArr-(passNo-1)-1), swaps, "" if swaps == 1 else "s"))
 
         # after the pass
-        if sortHappened == False:  # if nothing was moved
+        if swaps == 0:  # if nothing was moved
             print("Done in {} passes".format(passNo))
             sortDone = True  # stop looping
         passNo += 1
