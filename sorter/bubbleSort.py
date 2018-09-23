@@ -8,19 +8,20 @@ names = input("Enter list, seperated by commas and no spaces.\n> ").split(",")
 order = input("Order list ascending from smallest to largest? [Y/n]: ")
 
 if order == "n":
-	order = ">"
+    order = ">"
 else:
-	order = "<"
+    order = "<"
 
 
 def bubbleSort(arr, order):
+    passNo = 1
     lArr = len(arr)
     sortDone = False
     sortHappened = False  # if something was moved
     while not sortDone:
-        print("Pass")  # notify it's starting a new pass
+        print("Pass {} started".format(passNo))  # notify it's starting a new pass
         sortHappened = False
-        for i in range(1, lArr):  # 1 pass through array
+        for i in range(1, lArr-(passNo-1)):  # 1 pass through array, don't check sorted numbers
             if eval(arr[i] + order + arr[i-1]):  # if later position should be before earlier:
                 temp = arr[i-1]  # save earlier to temporary var
                 arr[i-1] = arr[i]  # replace earlier with later
@@ -32,8 +33,9 @@ def bubbleSort(arr, order):
 
         # after the pass
         if sortHappened == False:  # if nothing was moved
-            print("Done")
+            print("Done in {} passes".format(passNo))
             sortDone = True  # stop looping
+        passNo += 1
 
 
 bubbleSort(names, order)
