@@ -149,7 +149,7 @@ def makeBaby():  # selects a parent, mutates and returns it
     return child
 
 
-# init shit
+# init stuff
 # add goal to objects - no need - checked manually by draw() - change later
 # generate dots
 for x in range(0, populationsize):  # population of 10
