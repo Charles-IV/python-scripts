@@ -1,9 +1,9 @@
 from time import sleep
 
-def add(x=0,y=1):
-    z = x + y
-    print(z)
-    sleep(0.2)
-    add(y, z)
+def add(x,y):
+    z = x + y  # perform calculation
+    print(z)  # output result
+    sleep(0.2)  # HOLD! STOP! WAIT, to not kill my computer
+    add(y, z)  # perform next calculation
 
-add()
+add(0, 1)
