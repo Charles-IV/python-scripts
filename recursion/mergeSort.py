@@ -14,6 +14,59 @@ def split(arr, out):
 
     return out
 
+
+def merge(arr):
+    out = []
+    for i in range(0, len(arr), 2):  # iterate to one less than end of array, two at a time
+        #input("next iteration - press enter")
+        try:  # try sorting - incase only one element
+            if arr[i] > arr[i+1]:  # if they're the wrong way round
+                # swap 'em
+                # out.append([arr[i+1], arr[i]])
+                #out.append([for i in arr[i+1], for i in arr[i]])
+                # so it looks like i can't one line this
+                if isinstance(arr[i], list):  # if sorting two lists
+                    sort = []  # add them in single array
+                    for n in arr[i+1]:
+                        sort.append(n)
+                    for n in arr[i]:
+                        sort.append(n)
+                    out.append(sort)
+                else:  # if sorting two items
+                    out.append([arr[i+1], arr[i]])  # chuck 'em in
+            else:
+                # out.append([arr[i], arr[i+1]])
+                #out.append([for i in arr[i], for i in arr[i+1]])
+                if isinstance(arr[i], list):
+                    sort = []
+                    for n in arr[i]:
+                        sort.append(n)
+                    for n in arr[i+1]:
+                        sort.append(n)
+                    out.append(sort)
+                else:
+                    out.append([arr[i], arr[i+1]])
+
+        except IndexError:  # if only one element left
+            #print("doing single item thing")
+            if i == 0:  # if only one item left
+                for i in arr[0]:
+                    out.append(i)  # put it back into one list
+            else:
+                out.append(arr[i])  # add the element to get merged later
+        print(out)
+    # check if it's sorted, depending on if it is 1d or 2d
+    finished = out
+    if isinstance(out[0], list):  # if not done
+        #print("merging again")
+        finished = merge(out)  # merge it again
+
+    # should be done now
+    return finished
+
+
 a = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
 
-print(split(a, []))
+splitted = split(a, [])
+
+print(merge(a))
