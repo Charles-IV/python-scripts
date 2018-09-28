@@ -27,8 +27,11 @@ def merge(arr):
                 # so it looks like i can't one line this
                 if isinstance(arr[i], list):  # if sorting two lists
                     sort = []  # add them in single array
-                    for n in arr[i+1]:
-                        sort.append(n)
+                    for n in len(arr[i]):
+                        if arr[n] > arr[n+1]:
+                            sort.append(arr[n+1])
+                        else:
+                            sort.append(arr[n])
                     for n in arr[i]:
                         sort.append(n)
                     out.append(sort)
@@ -39,10 +42,11 @@ def merge(arr):
                 #out.append([for i in arr[i], for i in arr[i+1]])
                 if isinstance(arr[i], list):
                     sort = []
-                    for n in arr[i]:
-                        sort.append(n)
-                    for n in arr[i+1]:
-                        sort.append(n)
+                    for n in len(arr[i]):
+                        if arr[n] > arr[n+1]:
+                            sort.append(arr[n+1])
+                        else:
+                            sort.append(arr[n])
                     out.append(sort)
                 else:
                     out.append([arr[i], arr[i+1]])
@@ -65,7 +69,12 @@ def merge(arr):
     return finished
 
 
-a = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+#a = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+from random import randint
+a = []
+for i in range(10):
+    a.append(randint(0, 100))
+#a = input("Enter list to be sorted: ")
 
 splitted = split(a, [])
 
