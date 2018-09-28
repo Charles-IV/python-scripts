@@ -6,4 +6,5 @@ def add(x,y):
     sleep(0.2)  # HOLD! STOP! WAIT, to not kill my computer
     add(y, z)  # perform next calculation
 
+print("0\n1")
 add(0, 1)
