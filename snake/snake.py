@@ -118,10 +118,10 @@ def spawnPart():
 
 def draw():
     message = ""  # custom banner, for use in debugging
-    console = str(message) + "\n" + Fore.GREEN + Back.GREEN + Style.BRIGHT
+    console = str(message) + "\n"
     for y in range(1, height + 1):
         ony = []
-        line = Style.RESET_ALL + "  " + Fore.GREEN + Back.GREEN
+        line = Style.RESET_ALL + "  " + Fore.GREEN + Back.GREEN  # spacer
         # get stuff on y
         for part in snake:
             if part.yPos == y:
@@ -146,7 +146,7 @@ def draw():
             
         console += line + " \n"  # newline and spacer
         
-    console += Style.RESET_ALL + "Score: {}".format(score)  # reset the style for other outputs
+    console += Style.RESET_ALL + "  Score: {}".format(score)  # reset the style for other outputs
     cls()  # clear screen
     print(console)  # replace it
     
