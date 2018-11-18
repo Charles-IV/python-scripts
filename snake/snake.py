@@ -12,11 +12,7 @@ fps = 10
 
 
 def gameOver():
-    # TODO: PROBLEM: it iterates through all the other
-    #snake = []  # clear snake
-    #input("died, enter")  # TODO: debugging
     cls()
-    #print(snake.xPos, snake.yPos)  # TODO
     print("\n\n"+
         "      _____          __  __ ______    ______      ________ _____  \n"+
         "     / ____|   /\   |  \/  |  ____|  / __ \ \    / /  ____|  __ \ \n"+
@@ -26,25 +22,11 @@ def gameOver():
         "     \_____/_/    \_\_|  |_|______|  \____/   \/   |______|_|  \_\ \n\n"+
         "   Y O U   D I E D\n\n"+
         "   Score = {}\n\n".format(score))
-    input("   >")  # clear out all the gunk waiting to be inputed so i get y or n next
+    input("   >")  # clear out all the gunk waiting to be inputed so I get y or n next
     restart = input("\033[1A   Do you want to restart? [Y/n]: ")  # ansi escape to go up one line to overwrite last line
-    #input(restart + str(restart == "n"))
-    #restart = input()
-    if restart.lower() == "n":  # TODO: maybe "\n"
+    if restart.lower() == "n":
         exit()
     # else just return
-    """else: 
-        # spawn the stuff
-        #input("restarting")
-        snake = []
-        #print(snake)
-        #input("snake arr")
-        food = Food
-        snake.append(SnakeHead())
-        #print(snake)
-        #input("snake inited with" + str(snake[0].pos))
-        #return
-        # TODO: other parts"""
 
 
 class Food:
@@ -72,6 +54,7 @@ class SnakeHead:
     def up(self, inp):
         # get direction
         self.dir = inp  # TODO: make this more efficient, don't need duplicate variables
+                        # currently I'm using this to compare the current direction to the input, so the player doesn't turn 180 and kill themselves, but it could be made more efficient
         
         # move
         if self.dir == "w":  # if up
@@ -91,21 +74,13 @@ class SnakeHead:
         # check if colliding with something
         if self.pos == food.pos:  # if eating some food
             spawnPart()  # add a part to the snake
-            #score += 1  # TODO
             food.eaten = True  # tell the food it's been eaten to respawn
             
-        #if 0 > self.yPos < height+1 or 0 > self.xPos < width+1:  # if off the screen
-        #    gameOver()  # m8, u ded
-        if (1 > self.xPos or self.xPos > width) or (1 > self.yPos or self.yPos > height):
-            #print("off screen, {}, {}".format(0 > self.xPos, self.xPos > width))  # TODO
-            #gameOver()  # TODO: self for debugging
-            self.over = True
-            #input("ok your here" + snake[0].pos)  # TODO
+        if (1 > self.xPos or self.xPos > width) or (1 > self.yPos or self.yPos > height):  # if off screen
+            self.over = True  # tell main bit to end game and recreate vars
             
         for part in snake[1:]:  # iterate through the parts on the snake, skipping the head
             if part.pos == self.pos:  # if you're eating yourself
-                #print("eating self")  # TODO
-                #gameOver()  # ouch!
                 self.over = True
                 
                 
@@ -118,6 +93,7 @@ class SnakePart:
         self.yPos = int(self.yPos)
         self.oldPos = self.pos
         self.over = self.parent.over  # placeholder to make my life easier
+        # TODO: most of this could probably be moved into  up() and just call up here
         
     def up(self, inp):  # take input but ignore it - thats mummys job
         # update old position
@@ -125,17 +101,15 @@ class SnakePart:
         # update current possition to parents old position and update xPos and yPos
         self.pos = self.parent.oldPos
         self.xPos, self.yPos = self.pos.split("x")
-        self.xPos = int(self.xPos)
+        self.xPos = int(self.xPos)  # change to integers
         self.yPos = int(self.yPos)
-        #self.xPos, self.yPos = 10,10  # TODO
         
         self.over = self.parent.over
-        # TODO
         
         
 def cls():  # to clear screen
-    #os.system('cls' if os.name == 'nt' else 'clear')
-    print("\033[2J \033[H", end="")  # clear screen and go to 0,0, then go to 0,0 again because ansi sucks? This method works when access to command prompt is blocked
+    print("\033[2J \033[H", end="")  # clear screen and go to 0,0, then go to 0,0 again because ansi sucks? There's a problem with Esc[2J
+    # This method works when access to command prompt is blocked
     
 
 def spawnPart():
@@ -143,7 +117,7 @@ def spawnPart():
 
 
 def draw():
-    message = "" #snake[0].yPos  # custom banner, for use in debugging
+    message = ""  # custom banner, for use in debugging
     console = str(message) + "\n" + Fore.GREEN + Back.GREEN + Style.BRIGHT
     for y in range(1, height + 1):
         ony = []
@@ -159,7 +133,7 @@ def draw():
         # go across screen
         for x in range(1, width + 1):
             line += " "  # spacer
-            char = "-" #+ Style.NORMAL # character to write in that position
+            char = "-"  # character to write in that position
             for obj in ony:
                 if obj.xPos == x:  # if it's this position
                     if type(obj) == Food:  # if it's food
@@ -176,10 +150,11 @@ def draw():
     cls()  # clear screen
     print(console)  # replace it
     
-    
 
-    
-# start runtime
+#################  
+# start runtime #
+#################
+
 cls()
 print(
 "\n\n\n   WELCOME TO ASCII SNAKE\n\n"+
@@ -187,8 +162,9 @@ print(
 "   THE SNAKE IS REPRESENTED WITH '#'s\n\n"+
 "   THE FOOD IS REPRESENTED WITH '@'\n\n"+
 "   BLANK SQUARES ARE REPRESENTED WITH '-'s\n"+
-"   THERE IS A SINGLE SPACE BUFFER BETWEEN EACH SQUARE\n\n\n"+  # TODO: remove if I remove them
-"   (press enter to start)")
+"   THERE IS A SINGLE SPACE BUFFER BETWEEN EACH SQUARE\n\n\n"+  # TODO: remove if I remove buffer
+"   (press enter to start)"
+)
 input()
 
 # spawn the stuff
@@ -200,10 +176,6 @@ for i in range(0, 5):  # create 5 parts
 inp = "d"
 score = 0
 while True:
-    #input("NEXT THING")  # TODO
-    # get user input
-    
-    # update stuff
     # get inputs
     if is_pressed("w") and snake[0].dir != "s":
         inp = "w"
@@ -226,15 +198,14 @@ while True:
             food = Food()
             inp = "d"
             gameOver()  # do the gameOver screen
-            score = 0
-            break  # try and break out of loop of all the parts
-    # input("now here" + snake[0].pos)  # TODO
+            score = 0  # reset score afterwards so people can see it on the gameOver screen
+            break  # break out of loop of all the parts
         
     if food.eaten:  # if the food's been eaten
-        food.up()  # update the food
-        score += 1
+        food.up()  # respawn the food
+        score += 1  # increase score
         
 
-    draw()
-    time.sleep(1/fps)
-    
+    draw()  # draw the current screen
+    time.sleep(1/fps)  # slow down so it's playable
+
