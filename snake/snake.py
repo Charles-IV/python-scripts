@@ -119,9 +119,9 @@ def spawnPart():
 def draw():
     message = ""  # custom banner, for use in debugging
     console = str(message) + "\n"
-    for y in range(1, height + 1):
+    for y in range(0, height + 2):  # 0, height+2 for border
         ony = []
-        line = Style.RESET_ALL + "  " + Fore.GREEN + Back.GREEN  # spacer
+        line = "  " + Back.WHITE + "  " + Style.RESET_ALL  # spacer and border
         # get stuff on y
         for part in snake:
             if part.yPos == y:
@@ -132,19 +132,21 @@ def draw():
             
         # go across screen
         for x in range(1, width + 1):
-            line += " "  # spacer
-            char = "-"  # character to write in that position
-            for obj in ony:
-                if obj.xPos == x:  # if it's this position
-                    if type(obj) == Food:  # if it's food
-                        char = Fore.RED + "@" + Fore.GREEN  # overwrite character to write
-                    
-                    else:  # if it snake
-                        char = Fore.BLUE + "#" + Fore.GREEN
+            if y == 0 or y == height + 1:  # borders
+                char = Back.WHITE + "  "
+            else:
+                char = "  "  # character to write in that position
+                for obj in ony:
+                    if obj.xPos == x:  # if it's this position
+                        if type(obj) == Food:  # if it's food
+                            char = Back.RED + "  " + Style.RESET_ALL  # overwrite character to write
+                        
+                        else:  # if it snake
+                            char = Fore.GREEN + Back.GREEN + "  " + Style.RESET_ALL
                         
             line += char  # write character in this position
             
-        console += line + " \n"  # newline and spacer
+        console += line + Back.WHITE + "  \n" + Style.RESET_ALL  # newline and border
         
     console += Style.RESET_ALL + "  Score: {}".format(score)  # reset the style for other outputs
     cls()  # clear screen
@@ -159,10 +161,9 @@ cls()
 print(
 "\n\n\n   WELCOME TO ASCII SNAKE\n\n"+
 "   USE WASD TO CONTROL\n\n"+
-"   THE SNAKE IS REPRESENTED WITH '#'s\n\n"+
-"   THE FOOD IS REPRESENTED WITH '@'\n\n"+
-"   BLANK SQUARES ARE REPRESENTED WITH '-'s\n"+
-"   THERE IS A SINGLE SPACE BUFFER BETWEEN EACH SQUARE\n\n\n"+  # TODO: remove if I remove buffer
+"   THE SNAKE IS REPRESENTED WITH '{}'s\n".format(Back.GREEN+"  "+Style.RESET_ALL)+
+"   THE FOOD IS REPRESENTED WITH '{}'\n".format(Back.RED+"  "+Style.RESET_ALL)+
+"   THE BORDER IS REPRESENTED WITH '{}'\n\n\n".format(Back.WHITE+"  "+Style.RESET_ALL)+
 "   (press enter to start)"
 )
 input()
