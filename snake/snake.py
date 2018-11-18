@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
-import os, random, time
+import os, random
+from time import time, sleep
 from keyboard import is_pressed
 from colorama import init, Fore, Back, Style
 
@@ -176,6 +177,7 @@ for i in range(0, 5):  # create 5 parts
     spawnPart()
 inp = "d"
 score = 0
+lastTime = time()
 while True:
     # get inputs
     if is_pressed("w") and snake[0].dir != "s":
@@ -188,25 +190,30 @@ while True:
         inp = "d"
         
     # update everything
-    for part in snake:
-        part.up(inp)  # parts that aren't the head will ignore inp
-        if part.over:  # if game over
-            # reset the variables because gameOver can't
-            snake = []
-            snake.append(SnakeHead())
-            for i in range(0, 5):  # create 5 parts
-                spawnPart()
-            food = Food()
-            inp = "d"
-            gameOver()  # do the gameOver screen
-            score = 0  # reset score afterwards so people can see it on the gameOver screen
-            break  # break out of loop of all the parts
+    if time() - lastTime >= 1/fps:
+        for part in snake:
+            part.up(inp)  # parts that aren't the head will ignore inp
+            if part.over:  # if game over
+                # reset the variables because gameOver can't
+                snake = []
+                snake.append(SnakeHead())
+                for i in range(0, 5):  # create 5 parts
+                    spawnPart()
+                food = Food()
+                inp = "d"
+                gameOver()  # do the gameOver screen
+                score = 0  # reset score afterwards so people can see it on the gameOver screen
+                break  # break out of loop of all the parts
+            
+        if food.eaten:  # if the food's been eaten
+            food.up()  # respawn the food
+            score += 1  # increase score
         
-    if food.eaten:  # if the food's been eaten
-        food.up()  # respawn the food
-        score += 1  # increase score
-        
-
-    draw()  # draw the current screen
-    time.sleep(1/fps)  # slow down so it's playable
+    
+    #lastTime = time()
+    #if time() - lastTime == 1/fps:
+        draw()
+        lastTime = time()
+    #draw()  # draw the current screen
+    #sleep(1/fps)  # slow down so it's playable
 
