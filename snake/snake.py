@@ -179,7 +179,7 @@ inp = "d"
 score = 0
 lastTime = time()
 while True:
-    # get inputs
+    # get inputs whenever possible
     if is_pressed("w") and snake[0].dir != "s":
         inp = "w"
     elif is_pressed("a") and snake[0].dir != "d":
@@ -190,7 +190,7 @@ while True:
         inp = "d"
         
     # update everything
-    if time() - lastTime >= 1/fps:
+    if time() - lastTime >= 1/fps:  # only update if the correct amount of time has elapsed
         for part in snake:
             part.up(inp)  # parts that aren't the head will ignore inp
             if part.over:  # if game over
@@ -209,11 +209,7 @@ while True:
             food.up()  # respawn the food
             score += 1  # increase score
         
-    
-    #lastTime = time()
-    #if time() - lastTime == 1/fps:
+        
         draw()
         lastTime = time()
-    #draw()  # draw the current screen
-    #sleep(1/fps)  # slow down so it's playable
 
