@@ -161,7 +161,7 @@ def draw():
 cls()
 print(
 "\n\n\n   WELCOME TO ASCII SNAKE\n\n"+
-"   USE WASD TO CONTROL\n\n"+
+"   USE WASD OR THE ARROW KEYS TO CONTROL\n\n"+
 "   THE SNAKE IS REPRESENTED WITH '{}'s\n".format(Back.GREEN+"  "+Style.RESET_ALL)+
 "   THE FOOD IS REPRESENTED WITH '{}'\n".format(Back.RED+"  "+Style.RESET_ALL)+
 "   THE BORDER IS REPRESENTED WITH '{}'\n\n\n".format(Back.WHITE+"  "+Style.RESET_ALL)+
@@ -180,13 +180,13 @@ score = 0
 lastTime = time()
 while True:
     # get inputs whenever possible
-    if is_pressed("w") and snake[0].dir != "s":
+    if is_pressed("w") or is_pressed("up") and snake[0].dir != "s":
         inp = "w"
-    elif is_pressed("a") and snake[0].dir != "d":
+    elif is_pressed("a") or is_pressed("left") and snake[0].dir != "d":
         inp = "a"
-    elif is_pressed("s") and snake[0].dir != "w":
+    elif is_pressed("s") or is_pressed("down") and snake[0].dir != "w":
         inp = "s"
-    elif is_pressed("d") and snake[0].dir != "a":
+    elif is_pressed("d") or is_pressed("right") and snake[0].dir != "a":
         inp = "d"
         
     # update everything
