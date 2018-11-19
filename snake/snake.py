@@ -11,6 +11,9 @@ width = 20
 height = 20
 fps = 10
 
+# colours for snake, border, food, and background
+dispCols = [Back.GREEN, Back.WHITE, Back.RED, Back.RESET]
+
 
 def gameOver():
     cls()
@@ -28,6 +31,87 @@ def gameOver():
     if restart.lower() == "n":
         exit()
     # else just return
+
+
+def validateColInput(disp, col):
+    colours = [Back.BLACK, Back.RED, Back.GREEN, Back.YELLOW, Back.BLUE, Back.MAGENTA, Back.CYAN, Back.WHITE, Back.RESET]  # available colours
+    if col == "":  # if no input (default)
+        return True  # dont change value
+    try:
+        col = int(col)  # see if it can be casted as integer
+        if col < 1 or col > 9:  # if input out of range
+            raise Exception()
+    except (ValueError, Exception):
+        print("     Please enter a number between 1 and 9 (inclusive) or press enter for default")
+        return False
+    
+    # we now know the input is valid
+    dispCols[disp] = colours[col-1]  # change colour to display
+    return True  # tell customise() it's valid
+    
+
+def customise():  # allow the user to change the colour of the parts
+    cls()
+    colours = [Back.BLACK+"1. black", Back.RED+"2. red", Back.GREEN+"3. green", Back.YELLOW+"4. yellow", Back.BLUE+"5. blue", Back.MAGENTA+"6. magenta", Back.CYAN+"7. cyan", Back.WHITE+"8. white", Back.RESET+"9. none", Back.RESET]
+    # snake
+    print("""\n\n
+   Choose colours for snake, border, food, and background:
+   
+   Colour for snake:
+   {0}{9}\n   {1}{9}\n   {2}{9}\n   {3}{9}\n   {4}{9}\n   {5}{9}\n   {6}{9}\n   {7}{9}\n   {8}{9}""".format(*colours)
+         )
+    
+    valid = False
+    while not valid:
+        col = input("\n   Enter number colour for snake (default 3): ")
+        valid = validateColInput(0, col)
+        
+    # border
+    cls()
+    print(Back.RESET)
+    print("\n\n   Colour for border:\n"+
+    "   {0}{9}\n   {1}{9}\n   {2}{9}\n   {3}{9}\n   {4}{9}\n   {5}{9}\n   {6}{9}\n   {7}{9}\n   {8}{9}".format(*colours)
+    )
+    
+    valid = False
+    while not valid:
+        col = input("\n   Enter number colour for border (default 8): ")
+        valid = validateColInput(0, col)
+        
+    # food
+    cls()
+    print(Back.RESET)
+    print("\n\n   Colour for food:\n"+
+    "   {0}{9}\n   {1}{9}\n   {2}{9}\n   {3}{9}\n   {4}{9}\n   {5}{9}\n   {6}{9}\n   {7}{9}\n   {8}{9}".format(*colours)
+    )
+    
+    valid = False
+    while not valid:
+        col = input("\n   Enter number colour for food (default 2): ")
+        valid = validateColInput(0, col)
+        
+    # background
+    cls()
+    print(Back.RESET)
+    print("\n\n   Colour for background:\n"+
+    "   {0}{9}\n   {1}{9}\n   {2}{9}\n   {3}{9}\n   {4}{9}\n   {5}{9}\n   {6}{9}\n   {7}{9}\n   {8}{9}".format(*colours)
+    )
+    
+    valid = False
+    while not valid:
+        col = input("\n   Enter number colour for background (default 9): ")
+        valid = validateColInput(0, col)
+        
+    cls()
+    print(Back.RESET)
+    print("""\n\n
+   Success!
+   Colour for snake: {}\n""".format(dispCols[0]+"  "+Back.RESET)+
+    "   Colour for border: {}\n".format(dispCols[1]+"  "+Back.RESET)+
+    "   Colour for food: {}\n".format(dispCols[2]+"  "+Back.RESET)+
+    "   Colour for background: {}\n".format(dispCols[3]+"  "+Back.RESET)+
+    "\n   (continue)"
+    )
 
 
 class Food:
@@ -122,7 +206,7 @@ def draw():
     console = str(message) + "\n"
     for y in range(0, height + 2):  # 0, height+2 for border
         ony = []
-        line = "  " + Back.WHITE + "  " + Style.RESET_ALL  # spacer and border
+        line = "  " + dispCols[1] + "  "  # spacer and border
         # get stuff on y
         for part in snake:
             if part.yPos == y:
@@ -134,20 +218,20 @@ def draw():
         # go across screen
         for x in range(1, width + 1):
             if y == 0 or y == height + 1:  # borders
-                char = Back.WHITE + "  "
+                char = dispCols[1] + "  "
             else:
-                char = "  "  # character to write in that position
+                char = dispCols[3] + "  "  # character to write in that position
                 for obj in ony:
                     if obj.xPos == x:  # if it's this position
                         if type(obj) == Food:  # if it's food
-                            char = Back.RED + "  " + Style.RESET_ALL  # overwrite character to write
+                            char = dispCols[2] + "  "  # overwrite character to write
                         
                         else:  # if it snake
-                            char = Fore.GREEN + Back.GREEN + "  " + Style.RESET_ALL
+                            char = dispCols[0] + "  "
                         
             line += char  # write character in this position
             
-        console += line + Back.WHITE + "  \n" + Style.RESET_ALL  # newline and border
+        console += line + dispCols[1] + "  \n" + Back.RESET  # newline and border
         
     console += Style.RESET_ALL + "  Score: {}".format(score)  # reset the style for other outputs
     cls()  # clear screen
@@ -162,12 +246,16 @@ cls()
 print(
 "\n\n\n   WELCOME TO ASCII SNAKE\n\n"+
 "   USE WASD OR THE ARROW KEYS TO CONTROL\n\n"+
-"   THE SNAKE IS REPRESENTED WITH '{}'s\n".format(Back.GREEN+"  "+Style.RESET_ALL)+
-"   THE FOOD IS REPRESENTED WITH '{}'\n".format(Back.RED+"  "+Style.RESET_ALL)+
-"   THE BORDER IS REPRESENTED WITH '{}'\n\n\n".format(Back.WHITE+"  "+Style.RESET_ALL)+
-"   (press enter to start)"
+"   THE SNAKE IS REPRESENTED WITH '{}'s\n".format(Back.GREEN+"  "+Back.RESET)+
+"   THE FOOD IS REPRESENTED WITH '{}'\n".format(Back.RED+"  "+Back.RESET)+
+"   THE BORDER IS REPRESENTED WITH '{}'\n\n".format(Back.WHITE+"  "+Back.RESET)+
+"   PRESS 'c' THEN ENTER TO CUSTOMISE COLOURS\n"+
+"   OR JUST ENTER TO START PLAYING\n\n\n"+
+"   (press enter to continue)"
 )
-input()
+
+if input() == "c":
+    customise()
 
 # spawn the stuff
 snake = []
