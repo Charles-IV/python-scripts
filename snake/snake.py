@@ -108,6 +108,9 @@ class Food:
         self.xPos = random.randint(1, width)
         self.yPos = random.randint(1, height)
         self.pos = str(self.xPos) + "x" + str(self.yPos)  # makes comparing easier
+        for part in snake:
+            if part.pos == self.pos:  # if the snake is where the food just spawned
+                food.up()  # try to change food postition to where the snake isn't
         self.eaten = False  # maybe inefficient, but it makes regenerating easier
             
             
