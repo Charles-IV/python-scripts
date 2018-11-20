@@ -50,61 +50,35 @@ def validateColInput(disp, col):
     return True  # tell customise() it's valid
     
 
+def getCol(arr):
+    colours = [Back.BLACK+"1. black", Back.RED+"2. red", Back.GREEN+"3. green", Back.YELLOW+"4. yellow", Back.BLUE+"5. blue", Back.MAGENTA+"6. magenta", Back.CYAN+"7. cyan", Back.WHITE+"8. white", Back.RESET+"9. none", Back.RESET]
+    cls()
+    print(Back.RESET)
+    print("\n\n   Colour for {}:\n".format(arr[0])+
+    "   {0}{9}\n   {1}{9}\n   {2}{9}\n   {3}{9}\n   {4}{9}\n   {5}{9}\n   {6}{9}\n   {7}{9}\n   {8}{9}".format(*colours)
+    )
+    
+    valid = False
+    while not valid:
+        col = input("\n   Enter number colour for {} (default {}): ".format(arr[0], arr[1]))
+        valid = validateColInput(arr[2], col)
+
 def customise():  # allow the user to change the colour of the parts
     cls()
-    colours = [Back.BLACK+"1. black", Back.RED+"2. red", Back.GREEN+"3. green", Back.YELLOW+"4. yellow", Back.BLUE+"5. blue", Back.MAGENTA+"6. magenta", Back.CYAN+"7. cyan", Back.WHITE+"8. white", Back.RESET+"9. none", Back.RESET]
-    # snake
-    print("""\n\n
-   Choose colours for snake, border, food, and background:
-   
-   Colour for snake:
-   {0}{9}\n   {1}{9}\n   {2}{9}\n   {3}{9}\n   {4}{9}\n   {5}{9}\n   {6}{9}\n   {7}{9}\n   {8}{9}""".format(*colours)
-         )
     
-    valid = False
-    while not valid:
-        col = input("\n   Enter number colour for snake (default 3): ")
-        valid = validateColInput(0, col)
-        
-    # border
+    cust = [  # array of customisable parts. "name", default, possition in dispCols
+        ["snake", 3, 0],
+        ["border", 8, 1],
+        ["food", 2, 2],
+        ["background", 9, 3]
+    ]
+    
+    for i in cust:
+        getCol(i)
+    
     cls()
     print(Back.RESET)
-    print("\n\n   Colour for border:\n"+
-    "   {0}{9}\n   {1}{9}\n   {2}{9}\n   {3}{9}\n   {4}{9}\n   {5}{9}\n   {6}{9}\n   {7}{9}\n   {8}{9}".format(*colours)
-    )
-    
-    valid = False
-    while not valid:
-        col = input("\n   Enter number colour for border (default 8): ")
-        valid = validateColInput(0, col)
-        
-    # food
-    cls()
-    print(Back.RESET)
-    print("\n\n   Colour for food:\n"+
-    "   {0}{9}\n   {1}{9}\n   {2}{9}\n   {3}{9}\n   {4}{9}\n   {5}{9}\n   {6}{9}\n   {7}{9}\n   {8}{9}".format(*colours)
-    )
-    
-    valid = False
-    while not valid:
-        col = input("\n   Enter number colour for food (default 2): ")
-        valid = validateColInput(0, col)
-        
-    # background
-    cls()
-    print(Back.RESET)
-    print("\n\n   Colour for background:\n"+
-    "   {0}{9}\n   {1}{9}\n   {2}{9}\n   {3}{9}\n   {4}{9}\n   {5}{9}\n   {6}{9}\n   {7}{9}\n   {8}{9}".format(*colours)
-    )
-    
-    valid = False
-    while not valid:
-        col = input("\n   Enter number colour for background (default 9): ")
-        valid = validateColInput(0, col)
-        
-    cls()
-    print(Back.RESET)
-    print("""\n\n
+    print("""
    Success!
    Colour for snake: {}\n""".format(dispCols[0]+"  "+Back.RESET)+
     "   Colour for border: {}\n".format(dispCols[1]+"  "+Back.RESET)+
@@ -112,6 +86,7 @@ def customise():  # allow the user to change the colour of the parts
     "   Colour for background: {}\n".format(dispCols[3]+"  "+Back.RESET)+
     "\n   (continue)"
     )
+    input()
 
 
 class Food:
