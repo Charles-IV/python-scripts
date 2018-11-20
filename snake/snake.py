@@ -268,13 +268,13 @@ score = 0
 lastTime = time()
 while True:
     # get inputs whenever possible
-    if is_pressed("w") or is_pressed("up") and snake[0].dir != "s":
+    if (is_pressed("w") or is_pressed("up")) and snake[0].dir != "s":
         inp = "w"
-    elif is_pressed("a") or is_pressed("left") and snake[0].dir != "d":
+    elif (is_pressed("a") or is_pressed("left")) and snake[0].dir != "d":
         inp = "a"
-    elif is_pressed("s") or is_pressed("down") and snake[0].dir != "w":
+    elif (is_pressed("s") or is_pressed("down")) and snake[0].dir != "w":
         inp = "s"
-    elif is_pressed("d") or is_pressed("right") and snake[0].dir != "a":
+    elif (is_pressed("d") or is_pressed("right")) and snake[0].dir != "a":
         inp = "d"
         
     # update everything
