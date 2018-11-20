@@ -31,6 +31,16 @@ def gameOver():
     if restart.lower() == "n":
         exit()
     # else just return
+    
+
+def pause():
+    for y in range(7, 18):  # print on lines 5-15 of board
+        print("\033[{0};17H{1}\033[{0};30H{1}".format(y, Back.WHITE+"   ")+Back.RESET, end="")
+        # print two white lines parallel to each other
+        
+    print("\033[25;4HP A U S E D        (press enter to play)", end="")
+    input()  # wait until enter is pressed
+    print("\033[K")  # clear line with paused message on
 
 
 def validateColInput(disp, col):
@@ -224,6 +234,7 @@ print(
 "   THE SNAKE IS REPRESENTED WITH '{}'s\n".format(Back.GREEN+"  "+Back.RESET)+
 "   THE FOOD IS REPRESENTED WITH '{}'\n".format(Back.RED+"  "+Back.RESET)+
 "   THE BORDER IS REPRESENTED WITH '{}'\n\n".format(Back.WHITE+"  "+Back.RESET)+
+"   PRESS 'p' OR THE SPACE BAR TO PAUSE\n\n"+
 "   PRESS 'c' THEN ENTER TO CUSTOMISE COLOURS\n"+
 "   OR JUST ENTER TO START PLAYING\n\n\n"+
 "   (press enter to continue)"
@@ -251,6 +262,8 @@ while True:
         inp = "s"
     elif (is_pressed("d") or is_pressed("right")) and snake[0].dir != "a":
         inp = "d"
+    elif is_pressed("p") or is_pressed("space"):
+        pause()
         
     # update everything
     if time() - lastTime >= 1/fps:  # only update if the correct amount of time has elapsed
