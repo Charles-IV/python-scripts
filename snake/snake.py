@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import os, random
-from time import time, sleep
+from time import time
 from keyboard import is_pressed
 from colorama import init, Fore, Back, Style
 
