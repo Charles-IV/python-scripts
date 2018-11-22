@@ -7,6 +7,8 @@ from colorama import init, Fore, Back, Style
 
 init()  # for windows
 
+# some vars
+
 width = 20
 height = 20
 fps = 10
@@ -15,89 +17,9 @@ fps = 10
 dispCols = [Back.GREEN, Back.WHITE, Back.RED, Back.RESET]
 
 
-def gameOver():
-    cls()
-    print("\n\n"+
-        "      _____          __  __ ______    ______      ________ _____  \n"+
-        "     / ____|   /\   |  \/  |  ____|  / __ \ \    / /  ____|  __ \ \n"+
-        "    | |  __   /  \  | \  / | |__    | |  | \ \  / /| |__  | |__) |\n"+
-        "    | | |_ | / /\ \ | |\/| |  __|   | |  | |\ \/ / |  __| |  _  / \n"+
-        "    | |__| |/ ____ \| |  | | |____  | |__| | \  /  | |____| | \ \ \n"+
-        "     \_____/_/    \_\_|  |_|______|  \____/   \/   |______|_|  \_\ \n\n"+
-        "   Y O U   D I E D\n\n"+
-        "   Score = {}\n\n".format(score))
-    input("   >")  # clear out all the gunk waiting to be inputed so I get y or n next
-    restart = input("\033[1A   Do you want to restart? [Y/n]: ")  # ansi escape to go up one line to overwrite last line
-    if restart.lower() == "n":
-        exit()
-    # else just return
-    
-
-def pause():
-    for y in range(7, 18):  # print on lines 5-15 of board
-        print("\033[{0};17H{1}\033[{0};30H{1}".format(y, Back.WHITE+"   ")+Back.RESET, end="")
-        # print two white lines parallel to each other
-        
-    print("\033[25;4HP A U S E D        (press enter to play)", end="")
-    input()  # wait until enter is pressed
-    print("\033[K")  # clear line with paused message on
-
-
-def validateColInput(disp, col):
-    colours = [Back.BLACK, Back.RED, Back.GREEN, Back.YELLOW, Back.BLUE, Back.MAGENTA, Back.CYAN, Back.WHITE, Back.RESET]  # available colours
-    if col == "":  # if no input (default)
-        return True  # dont change value
-    try:
-        col = int(col)  # see if it can be casted as integer
-        if col < 1 or col > 9:  # if input out of range
-            raise Exception()
-    except (ValueError, Exception):
-        print("     Please enter a number between 1 and 9 (inclusive) or press enter for default")
-        return False
-    
-    # we now know the input is valid
-    dispCols[disp] = colours[col-1]  # change colour to display
-    return True  # tell customise() it's valid
-    
-
-def getCol(arr):
-    colours = [Back.BLACK+"1. black", Back.RED+"2. red", Back.GREEN+"3. green", Back.YELLOW+"4. yellow", Back.BLUE+"5. blue", Back.MAGENTA+"6. magenta", Back.CYAN+"7. cyan", Back.WHITE+"8. white", Back.RESET+"9. none", Back.RESET]
-    cls()
-    print(Back.RESET)
-    print("\n\n   Colour for {}:\n".format(arr[0])+
-    "   {0}{9}\n   {1}{9}\n   {2}{9}\n   {3}{9}\n   {4}{9}\n   {5}{9}\n   {6}{9}\n   {7}{9}\n   {8}{9}".format(*colours)
-    )
-    
-    valid = False
-    while not valid:
-        col = input("\n   Enter number colour for {} (default {}): ".format(arr[0], arr[1]))
-        valid = validateColInput(arr[2], col)
-
-def customise():  # allow the user to change the colour of the parts
-    cls()
-    
-    cust = [  # array of customisable parts. "name", default, possition in dispCols
-        ["snake", 3, 0],
-        ["border", 8, 1],
-        ["food", 2, 2],
-        ["background", 9, 3]
-    ]
-    
-    for i in cust:
-        getCol(i)
-    
-    cls()
-    print(Back.RESET)
-    print("""
-   Success!
-   Colour for snake: {}\n""".format(dispCols[0]+"  "+Back.RESET)+
-    "   Colour for border: {}\n".format(dispCols[1]+"  "+Back.RESET)+
-    "   Colour for food: {}\n".format(dispCols[2]+"  "+Back.RESET)+
-    "   Colour for background: {}\n".format(dispCols[3]+"  "+Back.RESET)+
-    "\n   (continue)"
-    )
-    input()
-
+###########
+# CLASSES #
+###########
 
 class Food:
     def __init__(self):
@@ -179,7 +101,99 @@ class SnakePart:
         
         self.over = self.parent.over
         
+
+############
+# FUNTIONS #
+############
+
+# functions called depending on what happens what happens in game
+def gameOver():
+    cls()
+    print("\n\n"+
+        "      _____          __  __ ______    ______      ________ _____  \n"+
+        "     / ____|   /\   |  \/  |  ____|  / __ \ \    / /  ____|  __ \ \n"+
+        "    | |  __   /  \  | \  / | |__    | |  | \ \  / /| |__  | |__) |\n"+
+        "    | | |_ | / /\ \ | |\/| |  __|   | |  | |\ \/ / |  __| |  _  / \n"+
+        "    | |__| |/ ____ \| |  | | |____  | |__| | \  /  | |____| | \ \ \n"+
+        "     \_____/_/    \_\_|  |_|______|  \____/   \/   |______|_|  \_\ \n\n"+
+        "   Y O U   D I E D\n\n"+
+        "   Score = {}\n\n".format(score))
+    input("   >")  # clear out all the gunk waiting to be inputed so I get y or n next
+    restart = input("\033[1A   Do you want to restart? [Y/n]: ")  # ansi escape to go up one line to overwrite last line
+    if restart.lower() == "n":
+        exit()
+    # else just return
+    
+
+def pause():
+    for y in range(7, 18):  # print on lines 5-15 of board
+        print("\033[{0};17H{1}\033[{0};30H{1}".format(y, Back.WHITE+"   ")+Back.RESET, end="")
+        # print two white lines parallel to each other
         
+    print("\033[25;4HP A U S E D        (press enter to play)", end="")
+    input()  # wait until enter is pressed
+    print("\033[K")  # clear line with paused message on
+
+
+# colour customisation functions
+def validateColInput(disp, col):
+    colours = [Back.BLACK, Back.RED, Back.GREEN, Back.YELLOW, Back.BLUE, Back.MAGENTA, Back.CYAN, Back.WHITE, Back.RESET]  # available colours
+    if col == "":  # if no input (default)
+        return True  # dont change value
+    try:
+        col = int(col)  # see if it can be casted as integer
+        if col < 1 or col > 9:  # if input out of range
+            raise Exception()
+    except (ValueError, Exception):
+        print("     Please enter a number between 1 and 9 (inclusive) or press enter for default")
+        return False
+    
+    # we now know the input is valid
+    dispCols[disp] = colours[col-1]  # change colour to display
+    return True  # tell customise() it's valid
+    
+
+def getCol(arr):
+    colours = [Back.BLACK+"1. black", Back.RED+"2. red", Back.GREEN+"3. green", Back.YELLOW+"4. yellow", Back.BLUE+"5. blue", Back.MAGENTA+"6. magenta", Back.CYAN+"7. cyan", Back.WHITE+"8. white", Back.RESET+"9. none", Back.RESET]
+    cls()
+    print(Back.RESET)
+    print("\n\n   Colour for {}:\n".format(arr[0])+
+    "   {0}{9}\n   {1}{9}\n   {2}{9}\n   {3}{9}\n   {4}{9}\n   {5}{9}\n   {6}{9}\n   {7}{9}\n   {8}{9}".format(*colours)
+    )
+    
+    valid = False
+    while not valid:
+        col = input("\n   Enter number colour for {} (default {}): ".format(arr[0], arr[1]))
+        valid = validateColInput(arr[2], col)
+
+
+def customise():  # allow the user to change the colour of the parts
+    cls()
+    
+    cust = [  # array of customisable parts. "name", default, possition in dispCols
+        ["snake", 3, 0],
+        ["border", 8, 1],
+        ["food", 2, 2],
+        ["background", 9, 3]
+    ]
+    
+    for i in cust:
+        getCol(i)
+    
+    cls()
+    print(Back.RESET)
+    print("""
+   Success!
+   Colour for snake: {}\n""".format(dispCols[0]+"  "+Back.RESET)+
+    "   Colour for border: {}\n".format(dispCols[1]+"  "+Back.RESET)+
+    "   Colour for food: {}\n".format(dispCols[2]+"  "+Back.RESET)+
+    "   Colour for background: {}\n".format(dispCols[3]+"  "+Back.RESET)+
+    "\n   (continue)"
+    )
+    input()
+
+
+# functions to assist with repetative tasks
 def cls():  # to clear screen
     print("\033[2J \033[H", end="")  # clear screen and go to 0,0, then go to 0,0 again because ansi sucks? There's a problem with Esc[2J
     # This method works when access to command prompt is blocked
@@ -189,6 +203,7 @@ def spawnPart():
     snake.append(SnakePart(snake[len(snake)-1]))  # create part with the end of the array as the parent
 
 
+# function to draw to screen
 def draw():
     message = ""  # custom banner, for use in debugging
     console = str(message) + "\n"
@@ -227,7 +242,7 @@ def draw():
     
 
 #################  
-# start runtime #
+# START RUNTIME #
 #################
 
 cls()
