@@ -9,8 +9,8 @@ init()  # for windows
 
 # some vars
 
-width = 20
-height = 20
+width = 40
+height = 40
 fps = 10
 
 # colours for snake, border, food, and background
@@ -30,7 +30,7 @@ class Food:
         self.xPos = random.randint(1, width)
         self.yPos = random.randint(1, height)
         self.pos = str(self.xPos) + "x" + str(self.yPos)  # makes comparing easier
-        for part in snake:
+        for part in snake, snake2:
             if part.pos == self.pos:  # if the snake is where the food just spawned
                 food.up()  # try to change food postition to where the snake isn't
         self.eaten = False  # maybe inefficient, but it makes regenerating easier
@@ -137,11 +137,12 @@ def gameOver(player):
     
 
 def pause():
-    for y in range(7, 18):  # print on lines 5-15 of board
-        print("\033[{0};17H{1}\033[{0};30H{1}".format(y, Back.WHITE+"   ")+Back.RESET, end="")
+    for y in range((height//4)+2, (3*(height//4))+3):  # print from a quater to three quarters down the board
+    #for y in range(7, 18):  # print on lines 5-15 of board
+        print("\033[{0};{2}H{1}\033[{0};{3}H{1}".format(y, Back.WHITE+"   ", width-(width//4)+4, width+(width//4)+4)+Back.RESET, end="")
         # print two white lines parallel to each other
         
-    print("\033[25;4HP A U S E D        (press enter to play)", end="")
+    print("\033["+str(height+5)+";4HP A U S E D        (press enter to play)", end="")
     input()  # wait until enter is pressed
     print("\033[K")  # clear line with paused message on
 
@@ -215,6 +216,25 @@ def spawnPart(player):
         snake.append(SnakePart(snake[len(snake)-1], 1))  # create part with the end of the array as the parent
     elif player == 2:
         snake2.append(SnakePart(snake2[len(snake2)-1], 2))
+        
+
+def spawnAll():
+    # spawn the stuff
+    snake = []
+    snake2 = []
+    food = Food()
+    
+    # player 1
+    snake.append(SnakeHead(1))
+    for i in range(0, 5):  # create 5 parts
+        spawnPart(1)
+    inp = "d"
+
+    # player 2
+    snake2.append(SnakeHead(2))
+    for i in range(0, 5):  # create 5 parts
+        spawnPart(2)
+    inp2 = "d"
 
 
 # function to draw to screen
@@ -281,7 +301,7 @@ print(
 
 if input() == "c":
     customise()
-
+"""
 # spawn the stuff
 snake = []
 snake2 = []
@@ -297,6 +317,8 @@ snake2.append(SnakeHead(2))
 for i in range(0, 5):  # create 5 parts
     spawnPart(2)
 inp2 = "d"
+"""
+spawnAll()
 
 score = 0
 lastTime = time()

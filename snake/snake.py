@@ -9,9 +9,11 @@ init()  # for windows
 
 # some vars
 
-width = 20
-height = 20
+width = 40
+height = 40
 fps = 10
+epilepsy = -1 # traust me, you don't want to enable this
+              # (-1 for disabled, 0 for colour set 1, 1 for colour set 2)
 
 # colours for snake, border, food, and background
 dispCols = [Back.GREEN, Back.WHITE, Back.RED, Back.RESET]
@@ -126,11 +128,12 @@ def gameOver():
     
 
 def pause():
-    for y in range(7, 18):  # print on lines 5-15 of board
-        print("\033[{0};17H{1}\033[{0};30H{1}".format(y, Back.WHITE+"   ")+Back.RESET, end="")
+    for y in range((height//4)+2, (3*(height//4))+3):  # print from a quater to three quarters down the board
+    #for y in range(7, 18):  # print on lines 5-15 of board
+        print("\033[{0};{2}H{1}\033[{0};{3}H{1}".format(y, Back.WHITE+"   ", width-(width//4)+4, width+(width//4)+4)+Back.RESET, end="")
         # print two white lines parallel to each other
         
-    print("\033[25;4HP A U S E D        (press enter to play)", end="")
+    print("\033["+str(height+5)+";4HP A U S E D        (press enter to play)", end="")
     input()  # wait until enter is pressed
     print("\033[K")  # clear line with paused message on
 
@@ -258,8 +261,11 @@ print(
 "   (press enter to continue)"
 )
 
-if input() == "c":
+start = input()
+if start == "c":
     customise()
+elif start == "e":
+    epilepsy = 0
 
 # spawn the stuff
 snake = []
@@ -268,8 +274,10 @@ snake.append(SnakeHead())
 for i in range(0, 5):  # create 5 parts
     spawnPart()
 inp = "d"
+
 score = 0
 lastTime = time()
+
 while True:
     # get inputs whenever possible
     if (is_pressed("w") or is_pressed("up")) and snake[0].dir != "s":
@@ -303,6 +311,12 @@ while True:
             food.up()  # respawn the food
             score += 1  # increase score
         
+        if epilepsy == 0:
+            dispCols = [Back.WHITE, Back.WHITE, Back.WHITE, Back.RESET]
+            epilepsy = 1
+        elif epilepsy == 1:
+            dispCols = [Back.RESET, Back.RESET, Back.RESET, Back.WHITE]
+            epilepsy = 0
         
         draw()
         lastTime = time()
