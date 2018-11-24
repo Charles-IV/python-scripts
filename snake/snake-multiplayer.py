@@ -30,9 +30,15 @@ class Food:
         self.xPos = random.randint(1, width)
         self.yPos = random.randint(1, height)
         self.pos = str(self.xPos) + "x" + str(self.yPos)  # makes comparing easier
-        for part in snake, snake2:
-            if part.pos == self.pos:  # if the snake is where the food just spawned
-                food.up()  # try to change food postition to where the snake isn't
+        try:
+            for part in v.snake:
+                if part.pos == self.pos:  # if the snake is where the food just spawned
+                    self.up()  # try to change food postition to where the snake isn't
+            for part in v.snake2:
+                if part.pos == self.pos:  # if the snake is where the food just spawned
+                    self.up()  # try to change food postition to where the snake isn't
+        except NameError:  # if vars ahven't been inited yet
+            pass  # TODO: make sure not at spawn point
         self.eaten = False  # maybe inefficient, but it makes regenerating easier
             
 
@@ -50,10 +56,13 @@ class SnakeHead:
         self.over = False  # have a variable for this so gaveOver gan be called and the full snake array passed to it, rather than passing it needlessly through the up method.
         
         
-    def up(self, inp):
+    def up(self):#, inp):
         # get direction
-        self.dir = inp  # TODO: make this more efficient, don't need duplicate variables
+        if self.player == 1:
+            self.dir = v.inp  # TODO: make this more efficient, don't need duplicate variables
                         # currently I'm using this to compare the current direction to the input, so the player doesn't turn 180 and kill themselves, but it could be made more efficient
+        elif self.player == 2:
+            self.dir = v.inp2
         
         # move
         if self.dir == "w":  # if up
@@ -71,20 +80,23 @@ class SnakeHead:
         self.pos = str(self.xPos) + "x" + str(self.yPos)
             
         # check if colliding with something
-        if self.pos == food.pos:  # if eating some food
-            spawnPart(self.player)  # add a part to the snake
-            food.eaten = True  # tell the food it's been eaten to respawn
+        if self.pos == v.food.pos:  # if eating some food
+            if self.player == 1:
+                v.snake = spawnPart(v.snake, self.player)  # add a part to the snake
+            elif self.player == 2:
+                v.snake2 = spawnPart(v.snake2, self.player)
+            v.food.eaten = True  # tell the food it's been eaten to respawn
             
         if (1 > self.xPos or self.xPos > width) or (1 > self.yPos or self.yPos > height):  # if off screen
             self.over = True  # tell main bit to end game and recreate vars
             
         # check if ran into other snake (can go over self)
         if self.player == 1:
-            for part in snake2:  # iterate through the parts on the other snake
+            for part in v.snake2:  # iterate through the parts on the other snake
                 if part.pos == self.pos:  # if other snake trapped you
                     self.over = True
         elif self.player == 2:
-            for part in snake:  # iterate through the parts on the other snake
+            for part in v.snake:  # iterate through the parts on the other snake
                 if part.pos == self.pos:  # if other snake trapped you
                     self.over = True
                 
@@ -101,7 +113,7 @@ class SnakePart:
         self.over = self.parent.over  # placeholder to make my life easier
         # TODO: most of this could probably be moved into  up() and just call up here
         
-    def up(self, inp):  # take input but ignore it - thats mummys job
+    def up(self):#, inp):  # take input but ignore it - thats mummys job
         # update old position
         self.oldPos = self.pos
         # update current possition to parents old position and update xPos and yPos
@@ -111,6 +123,40 @@ class SnakePart:
         self.yPos = int(self.yPos)
         
         self.over = self.parent.over
+        
+        
+class runtimeVars:  # object for storing runtime variables
+    def __init__(self):
+        self.reset()
+        
+    def reset(self):  # reset all to 0
+        self.snake = []
+        self.snake2 = []
+        
+        self.food = Food()
+        
+        # player 1
+        self.snake.append(SnakeHead(1))
+        for i in range(0, 5):  # create 5 parts
+            self.snake = spawnPart(self.snake, 1)
+        self.inp = "d"
+        
+        # player 2
+        self.snake2.append(SnakeHead(2))
+        for i in range(0, 5):  # create 5 parts
+            self.snake2 = spawnPart(self.snake2, 2)
+        self.inp2 = "d"
+
+        self.score = 0
+        """
+        self.bordersDrawn = False
+        
+        # board to only print updates
+        self.board = []
+        for row in range(0, height):
+            self.board.append([])
+            for column in range(0, width):
+                self.board[row].append(Back.RESET)  # background is probably transparent"""
 
 
 #############
@@ -133,6 +179,7 @@ def gameOver(player):
     restart = input("\033[1A   Do you want to restart? [Y/n]: ")  # ansi escape to go up one line to overwrite last line
     if restart.lower() == "n":
         exit()
+    v.reset()
     # else just return
     
 
@@ -211,13 +258,11 @@ def cls():  # to clear screen
     # This method works when access to command prompt is blocked
     
 
-def spawnPart(player):
-    if player == 1:
-        snake.append(SnakePart(snake[len(snake)-1], 1))  # create part with the end of the array as the parent
-    elif player == 2:
-        snake2.append(SnakePart(snake2[len(snake2)-1], 2))
+def spawnPart(snek, player):
+    snek.append(SnakePart(snek[len(snek)-1], player))  # create part with the end of the array as the parent
+    return snek
         
-
+"""
 def spawnAll():
     # spawn the stuff
     snake = []
@@ -235,6 +280,7 @@ def spawnAll():
     for i in range(0, 5):  # create 5 parts
         spawnPart(2)
     inp2 = "d"
+"""
 
 
 # function to draw to screen
@@ -245,16 +291,16 @@ def draw():
         ony = []
         line = "  " + dispCols[1] + "  "  # spacer and border
         # get stuff on y
-        for part in snake:
+        for part in v.snake:
             if part.yPos == y:
                 ony.append(part)
         
-        for part in snake2:
+        for part in v.snake2:
             if part.yPos == y:
                 ony.append(part)
                 
-        if food.yPos == y:  #  if the food is on y
-            ony.append(food)
+        if v.food.yPos == y:  #  if the food is on y
+            ony.append(v.food)
             
         # go across screen
         for x in range(1, width + 1):
@@ -318,30 +364,31 @@ for i in range(0, 5):  # create 5 parts
     spawnPart(2)
 inp2 = "d"
 """
-spawnAll()
+#spawnAll()
+v = runtimeVars()
 
 score = 0
 lastTime = time()
 while True:
     # get inputs whenever possible
     # player 1 - wasd
-    if is_pressed("w") and snake[0].dir != "s":
-        inp = "w"
-    elif is_pressed("a") and snake[0].dir != "d":
-        inp = "a"
-    elif is_pressed("s") and snake[0].dir != "w":
-        inp = "s"
-    elif is_pressed("d") and snake[0].dir != "a":
-        inp = "d"
+    if is_pressed("w") and v.snake[0].dir != "s":
+        v.inp = "w"
+    elif is_pressed("a") and v.snake[0].dir != "d":
+        v.inp = "a"
+    elif is_pressed("s") and v.snake[0].dir != "w":
+        v.inp = "s"
+    elif is_pressed("d") and v.snake[0].dir != "a":
+        v.inp = "d"
     # player 2 - arrow keys
-    if is_pressed("up") and snake2[0].dir != "s":
-        inp2 = "w"
-    elif is_pressed("left") and snake2[0].dir != "d":
-        inp2 = "a"
-    elif is_pressed("down") and snake2[0].dir != "w":
-        inp2 = "s"
-    elif is_pressed("right") and snake2[0].dir != "a":
-        inp2 = "d"
+    if is_pressed("up") and v.snake2[0].dir != "s":
+        v.inp2 = "w"
+    elif is_pressed("left") and v.snake2[0].dir != "d":
+        v.inp2 = "a"
+    elif is_pressed("down") and v.snake2[0].dir != "w":
+        v.inp2 = "s"
+    elif is_pressed("right") and v.snake2[0].dir != "a":
+        v.inp2 = "d"
     # pause
     if is_pressed("p") or is_pressed("space"):
         pause()
@@ -349,10 +396,10 @@ while True:
     # update everything
     if time() - lastTime >= 1/fps:  # only update if the correct amount of time has elapsed
         # player 1
-        for part in snake:
-            part.up(inp)  # parts that aren't the head will ignore inp
+        for part in v.snake:
+            part.up()#inp)  # parts that aren't the head will ignore inp
             if part.over:  # if game over
-                # reset the variables because gameOver can't
+                """# reset the variables because gameOver can't
                 snake = []
                 snake.append(SnakeHead(1))
                 for i in range(0, 5):  # create 5 parts
@@ -361,13 +408,16 @@ while True:
                 inp = "d"
                 gameOver(part.player)  # do the gameOver screen
                 score = 0  # reset score afterwards so people can see it on the gameOver screen
-                break  # break out of loop of all the parts
+                break  # break out of loop of all the parts"""
+                gameOver(part.player)
+                break
+                
                 
         # player 2
-        for part in snake2:
-            part.up(inp2)  # parts that aren't the head will ignore inp
+        for part in v.snake2:
+            part.up()#inp2)  # parts that aren't the head will ignore inp
             if part.over:  # if game over
-                # reset the variables because gameOver can't
+                """# reset the variables because gameOver can't
                 snake2 = []
                 snake2.append(SnakeHead(2))
                 for i in range(0, 5):  # create 5 parts
@@ -376,10 +426,12 @@ while True:
                 inp2 = "d"
                 gameOver(part.player)  # do the gameOver screen
                 score = 0  # reset score afterwards so people can see it on the gameOver screen
-                break  # break out of loop of all the parts
+                break  # break out of loop of all the parts"""
+                gameOver(part.player)
+                break
             
-        if food.eaten:  # if the food's been eaten
-            food.up()  # respawn the food
+        if v.food.eaten:  # if the food's been eaten
+            v.food.up()  # respawn the food
             score += 1  # increase score
         
         
