@@ -123,6 +123,18 @@ class runtimeVars:  # object for storing runtime variables
             self.board.append([])
             for column in range(0, width):
                 self.board[row].append(Back.RESET)  # background is probably transparent
+                
+    def resetBoard(self):
+        cls()  # clear screen
+        
+        self.bordersDrawn = False  # borders have been cleared
+        
+        # clear the board as it has been wiped
+        self.board = []
+        for row in range(0, height):
+            self.board.append([])
+            for column in range(0, width):
+                self.board[row].append(Back.RESET)  # background is probably transparent
         
 
 ############
@@ -157,14 +169,9 @@ def pause():
         
     print("\033["+str(height+5)+";4HP A U S E D        (press enter to play)", end="")
     input()  # wait until enter is pressed
-    print("\033[1A\033[K")  # move up to line with paused message on and clear it
     
-    # update board with colours that changed, so they are overwritten properly
-    for y in range(height//4, 3*(height//4)):
-        v.board[y][2*(width//5)] = Back.WHITE
-        v.board[y][2*(width//5)-1] = Back.WHITE
-        v.board[y][3*(width//5)] = Back.WHITE
-        v.board[y][3*(width//5)+1] = Back.WHITE
+    # just clear whole screen because rounding is a problem
+    v.resetBoard()
         
 # colour customisation functions
 def validateColInput(disp, col):
@@ -213,13 +220,12 @@ def customise():  # allow the user to change the colour of the parts
     
     cls()
     print(Back.RESET)
-    print("   Success!\n   Colour for snake: {}\n".format(dispCols[0]+"  "+Back.RESET)+
-    "   Colour for border: {}\n".format(dispCols[1]+"  "+Back.RESET)+
-    "   Colour for food: {}\n".format(dispCols[2]+"  "+Back.RESET)+
-    "   Colour for background: {}\n".format(dispCols[3]+"  "+Back.RESET)+
-    "\n   (continue)"
-    )
-    input()
+    print("   Success!")
+    
+    for i in range(0, len(cust)):
+        print("   Colour for {}: {}".format(cust[i][0], dispCols[i]+"  "+Back.RESET))
+        
+    input("\n   (continue)\n")
 
 
 # functions to assist with repetative tasks
@@ -282,7 +288,7 @@ def draw():
                         char = dispCols[0]
                         
             v.board[y-1][x-1] = char  # update board with what colour is in this position
-            if v.board[y-1][x-1] != oldBoard[y-1][x-1]:  # if the colour of this positino has changed
+            if v.board[y-1][x-1] != oldBoard[y-1][x-1]:  # if the colour of this position has changed
                 console += "\033[{};{}H{}".format(y+2, ((x+2)*2)-1, v.board[y-1][x-1] + "  ")  # log position as to be overwritten
     
     console += Style.RESET_ALL + "\033[{};3HScore: {}".format(height+4, v.score)  # reset the style for other outputs
