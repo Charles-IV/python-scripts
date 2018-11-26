@@ -103,7 +103,19 @@ class SnakePart:
 
 class runtimeVars:  # object for storing runtime variables
     def __init__(self):
-        self.reset()
+        # get highscore - not reset every time so put here
+        try:
+            f = open("highscore.txt", "r")  # try to open as read
+        except IOError:  # if the file doesn't exist
+            f = open("highscore.txt", "w")  # create file
+            f.write("0")  # write 0, it will be replaced with score later
+            f.close()
+            f = open("highscore.txt", "r")  # now open as read
+            
+        self.highscore = f.read()  # read highscore
+        f.close()  # close file
+        
+        self.reset()  # generate other variables
         
     def reset(self):  # reset all to 0
         self.snake = []
@@ -144,6 +156,13 @@ class runtimeVars:  # object for storing runtime variables
 # functions called depending on what happens what happens in game
 def gameOver():
     cls()
+    # check highscore
+    if v.score > int(v.highscore):  # if new highscore
+        v.highscore = str(v.score)  # replace old one
+        f = open("highscore.txt", "w")
+        f.write(v.highscore)
+        f.close()
+    
     print("\n\n"+
         "      _____          __  __ ______    ______      ________ _____  \n"+
         "     / ____|   /\   |  \/  |  ____|  / __ \ \    / /  ____|  __ \ \n"+
@@ -152,7 +171,8 @@ def gameOver():
         "    | |__| |/ ____ \| |  | | |____  | |__| | \  /  | |____| | \ \ \n"+
         "     \_____/_/    \_\_|  |_|______|  \____/   \/   |______|_|  \_\ \n\n"+
         "   Y O U   D I E D\n\n"+
-        "   Score = {}\n\n".format(v.score))
+        "   Score = {}\n".format(v.score)+
+        "   Highscore = {}\n\n".format(v.highscore))
     input("   >")  # clear out all the gunk waiting to be inputed so I get y or n next
     restart = input("\033[1A   Do you want to restart? [Y/n]: ")  # ansi escape to go up one line to overwrite last line
     if restart.lower() == "n":
