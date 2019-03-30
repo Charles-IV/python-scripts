@@ -19,19 +19,26 @@ def draw(board):  # draw board - TODO: may need players hands instead?
     print("lmao cant draw yet")  # TODO: replace when you can
 
 
-def gameOverCheck(p1, p2):  # check if game over
-    # check if player 1 has won
+def playerWonCheck(player):  # check if game over
+    # check if player has won
     home = 0  # number of pieces player has brought home
-    for piece in p1.hand:  # iterate through player 1's hand
+    for piece in player.hand:  # iterate through player's hand
         if piece.pos == -1:  # if piece is home
             home += 1
     
     if home == 7:  # if player has all 7 pieces home
-        return 1  # return 1 for 'player 1 has won'
+        return True  # return that player has won
+
+    else:
+        return False
 
     # TODO: maybe change this so it only checks one player at a time?
 
-    
+
+def gameOver(player):
+    print("Player {} has won!".format(player.no))  # TODO: improve this
+    input(">")
+    exit()
 
 
 def main():  # main starting function
@@ -48,7 +55,18 @@ def main():  # main starting function
 
     while not won:
         cls()
-        print("boopety boop another round")  # TODO: remove this
+        # check if player 1 has won
+        if playerWonCheck(player1):
+            won = True
+            gameOver(player1)
+        # check if player 2 has won
+        elif playerWonCheck(player2):
+            won = True
+            gameOver(player2)
+
+        
+
+
 
 
 main()
